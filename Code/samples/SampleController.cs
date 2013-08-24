@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Gibbo.Library;
 
 namespace Samples
