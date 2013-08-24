@@ -4,6 +4,7 @@
 #include "cWorld.h"
 #include "cPlayer.h"
 #include "cRandom.h"
+#include "cPerlinNoise.h"
 
 #include "cWorldProperties.h"
 
@@ -13,6 +14,7 @@ cWorld::cWorld()
 	cWorld::m_BackgroundMusicIntro.openFromFile("sfx/LD27_Intro.ogg");
 	cWorld::m_BackgroundMusicLoop.openFromFile("sfx/LD27_Loop.ogg");
 	cWorld::m_BackgroundMusicLoop.setLoop(true);
+
 
 	/// timing Vars
 	cWorld::ResetTimers();
@@ -32,9 +34,12 @@ cWorld::cWorld()
 	m_bGameOver = false;
 	m_bClose = false;
 
+
 	/// Player
 	cWorld::m_pPlayer = new cPlayer();
 	cWorld::m_pPlayer->SetWorld(this);
+	ResetPlayer();
+
 
 	/// Power Up
 	cWorld::m_fPowerUpTimerMax = cWorldProperties::GetPowerUpTimerMax();
@@ -57,15 +62,29 @@ void cWorld::LoadWorld ()
 	cWorld::m_vecTiles.clear();
 	
 	// Generate the Bottom
-	cTile* pTile =  NULL;
+	cTile* t_pTile = NULL;
 	
 	for (int i = 0; i < 50; ++i)
 	{
-		for (int j = 1; j < 2; ++j)
+		float xCoord = cTile::s_iTileSizeInPixels * i;
+		float yCoord = 600 - cTile::s_iTileSizeInPixels * GetTerrainHeight(cWorldProperties::GetTerrainHeightFrequency() * 20 * i);
+
+		t_pTile= new cTile(cTile::EARTH_TOP);
+		t_pTile->SetPosition(
+			sf::Vector2f(
+				xCoord,
+				yCoord
+		));
+		cWorld::m_vecTiles.push_back(t_pTile);
+
+		// Add tiles to the bottom of the top block
+		for(int i = 600;
+			i > yCoord;
+			i -= cTile::s_iTileSizeInPixels)
 		{
-			pTile= new cTile(cTile::EARTH_TOP);
-			pTile->SetPosition(sf::Vector2f(cTile::s_iTileSizeInPixels * i, 600 - cTile::s_iTileSizeInPixels * j));  
-			cWorld::m_vecTiles.push_back(pTile);
+			t_pTile = new cTile(cTile::EARTH_BELOW);
+			t_pTile->SetPosition(sf::Vector2f(xCoord, i));
+			cWorld::m_vecTiles.push_back(t_pTile);
 		}
 	}
 }
@@ -150,6 +169,7 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 {
 	if (!m_bGameOver)
 	{
+		// Render tiles
 		std::vector<cTile*>::iterator it;
 		for (	it = m_vecTiles.begin();
 				it != m_vecTiles.end();
@@ -157,9 +177,12 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		{
 			(*it)->Draw(RW);
 		}
+
+		// Render player and powerup
 		cWorld::m_pPlayer->Draw(RW);
 		cWorld::m_PowerUp.Draw(RW);
 
+		// Render time bar
 		cWorld::DrawTime(RW);
 	}
 	else
@@ -172,7 +195,6 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 {
 	m_fRemainingTime += deltaT;
 }
-
 
 void cWorld::MoveTiles(sf::Vector2f Delta)
 {
@@ -203,8 +225,6 @@ void cWorld::MoveTiles(sf::Vector2f Delta)
 		AddTilesToTheEnd();
 	}
 }
-
-
 
 std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 {
@@ -241,17 +261,11 @@ int cWorld::GetTerrainHeight(float xValue)
 	// leave about 5 tiles empty and divide the remainder by 19. Voilà!
 	// Oh and don't forget to add 1 afterwards. This is really magic.
 	//return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
-	return static_cast<int>((FindNoise(time(NULL), xValue, xValue) + 1.f) / 2.f * 26.f) + 1;
+	cPerlinNoise perlin(2, 3);
+	float noise = perlin.CreateNoise(xValue);
+	//float noise = SmoothNoise(time(NULL), xValue, xValue);
+	return static_cast<int>((noise + 1.f) / 2.f * 26.f) + 1;
 }
-
-float cWorld::FindNoise(int seed, float x, float y)
-{
-   int n = (int)x + (int)y * 57;
-   n = (n << 13) ^ n;
-   
-   int nn = (n * (n * n * seed + 19990303 * seed) + 1376312589) & 0x7fffffff;
-   return 1.0f - ((float)nn / 1073741824.0f);
-};
 
 void cWorld::AddTilesToTheEnd()
 {
@@ -302,7 +316,7 @@ void cWorld::ResetTimers()
 
 void cWorld::ResetPlayer()
 {
-	cWorld::m_pPlayer->SetPosition(sf::Vector2f(300.f, 400.f));
+	cWorld::m_pPlayer->SetPosition(sf::Vector2f(300.f, 30.f));
 }
 
 void cWorld::ResetPowerUpPosition()
