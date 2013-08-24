@@ -40,7 +40,7 @@ private:
 	
 	std::vector<cTile*> m_vecTiles;
 
-	sf::Vector2u m_vecWorldSize;
-
+	sf::Vector2f m_vecIncrementalWorldMovement;
+	sf::Vector2f m_vecKumulativeWorldMovement;
 
 };

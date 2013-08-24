@@ -18,6 +18,7 @@ void cTile::Draw (sf::RenderWindow* renderWindow)
 void cTile::SetPosition(sf::Vector2f position)
 {
 	cTile::m_Position = position;
+	cTile::m_Sprite.setPosition( position );
 }
 
 sf::Vector2f cTile::GetPosition()

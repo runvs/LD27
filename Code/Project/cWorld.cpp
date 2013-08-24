@@ -11,14 +11,12 @@ cWorld::cWorld()
 
 
 	/// world Vars
-	m_vecWorldSize = sf::Vector2u(50, 40);
-	m_fWorldMoveSpeed = 1.f;
+	m_fWorldMoveSpeed = 0.1f;
+	m_vecKumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
 	LoadWorld();
 
 	/// Player
 	cWorld::m_pPlayer = new cPlayer();
-
-	
 
 }
 
@@ -31,6 +29,20 @@ void cWorld::LoadWorld ()
 {
 	// create a randomly generated World
 
+	
+	// Generate the Bottom
+	cTile* pTile =  NULL;
+	
+	for (int i = 0; i < 50; ++i)
+	{
+		for (int j = 1; j < 2; ++j)
+		{
+			pTile= new cTile(cTile::EARTH_BELOW);
+			pTile->SetPosition(sf::Vector2f(cTile::s_iTileSizeInPixels * i, 600 - cTile::s_iTileSizeInPixels * j));  
+			cWorld::m_vecTiles.push_back(pTile);
+		}
+	}
+	
 	
 
 
@@ -72,11 +84,27 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 
 void cWorld::MoveTiles( sf::Vector2f Delta)
 {
+	m_vecKumulativeWorldMovement -= Delta;
+	m_vecIncrementalWorldMovement -= Delta;
 	std::vector<cTile*>::iterator it;
 	for (	it = m_vecTiles.begin();
 			it != m_vecTiles.end();
 			++it)
 	{
 		(*it)->SetPosition((*it)->GetPosition() + Delta);
+		if ((*it)->GetPosition().x <= - cTile::s_iTileSizeInPixels * 3 )
+		{
+			it = m_vecTiles.erase(it);
+			if (it == m_vecTiles.end())
+				break;
+		}
+	}
+
+	if( m_vecIncrementalWorldMovement.x >= cTile::s_iTileSizeInPixels)
+	{
+		m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
+		cTile* t_pTile = new cTile(cTile::EARTH_BELOW);
+		t_pTile->SetPosition(sf::Vector2f(m_vecIncrementalWorldMovement.x + 49 * cTile::s_iTileSizeInPixels, 600 - cTile::s_iTileSizeInPixels ));
+		m_vecTiles.push_back(t_pTile);
 	}
 }
