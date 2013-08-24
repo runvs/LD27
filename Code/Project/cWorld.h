@@ -54,6 +54,7 @@ private:
 
 	float m_fWorldMoveSpeed;
 
+	void MoveTheWorld(float deltaT);
 	cPerlinNoise* m_PerlinNoise;
 
 	void MoveTiles( sf::Vector2f vecDelta);
@@ -71,6 +72,8 @@ private:
 
 	std::vector<sf::RectangleShape> m_vecBackgroundShapes;
 
+	
+	void UpdateTimeBar();
 	sf::Shape* m_pTimeBar;
 	float m_fTotalTimeBarLength;
 
@@ -87,6 +90,8 @@ private:
 
 	sf::Music m_BackgroundMusicIntro;
 	sf::Music m_BackgroundMusicLoop;
+
+	sf::Font font;
 
 
 };

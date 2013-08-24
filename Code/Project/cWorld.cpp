@@ -49,8 +49,7 @@ cWorld::cWorld()
 
 	cWorld::m_BackgroundMusicIntro.play();
 
-
-
+	font.loadFromFile("gfx/font.ttf");
 }
 
 cWorld::~cWorld()
@@ -145,7 +144,7 @@ void cWorld::GetInput (sf::Event& Event)
 			{
 				cWorld::m_bClose = true;
 			}
-			else
+			else if (Event.key.code != sf::Keyboard::Space)
 			{
 				cWorld::RestartGame();
 			}
@@ -169,26 +168,6 @@ void cWorld::Update (float deltaT)
 		{
 			cWorld::m_fPowerUpTimer -= deltaT;
 		}
-
-		sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
-		cWorld::MoveTiles(t_vecTileMovement);
-		cWorld::MoveBackground(t_vecTileMovement);
-
-		float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
-		if (t_fTimeBarLenghtFactor < 0.f)
-		{
-			t_fTimeBarLenghtFactor = 0.f;
-			EndGame();
-		}
-		else if ( t_fTimeBarLenghtFactor > 1.f )
-		{
-			t_fTimeBarLenghtFactor = 1.f;
-
-			// additional: draw time more than 10 seconds next to time bar
-		}
-		m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
-
-
 		if (m_fPowerUpTimer <= 0 && !m_bPowerUpSpawned)	// powerup is spawned
 		{
 			cWorld::RepositionPowerUp();
@@ -197,8 +176,42 @@ void cWorld::Update (float deltaT)
 		{
 			ResetPowerUpPosition();	// move it out of the way
 		}
+
+		cWorld::MoveTheWorld(deltaT);
+		
+		cWorld::UpdateTimeBar();
+		
+
+
+		
 	}
 }
+
+
+void cWorld::MoveTheWorld(float deltaT)
+{
+	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
+	cWorld::MoveTiles(t_vecTileMovement);
+	cWorld::MoveBackground(t_vecTileMovement);
+}
+
+void cWorld::UpdateTimeBar()
+{
+	float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
+	if (t_fTimeBarLenghtFactor < 0.f)
+	{
+		t_fTimeBarLenghtFactor = 0.f;
+		EndGame();
+	}
+	else if ( t_fTimeBarLenghtFactor > 1.f )
+	{
+		t_fTimeBarLenghtFactor = 1.f;
+
+		// additional: draw time more than 10 seconds next to time bar
+	}
+	m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
+}
+
 
 void cWorld::Draw ( sf::RenderWindow* RW)
 {
@@ -227,10 +240,46 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 
 		// Render time bar
 		cWorld::DrawTime(RW);
+
+		// create and Draw the fonts
+		sf::Text t_sftextTotalTime("", font);
+		t_sftextTotalTime.setString("Total " + tostr(cWorld::m_fTotalTime));
+		t_sftextTotalTime.setPosition(sf::Vector2f(640.f, 5.f));
+		RW->draw(t_sftextTotalTime);
+
+		/// Additional Time
+		if (cWorld::m_fRemainingTime > 10.f)
+		{
+			sf::Text t_sftextAdditionalTime("", font);
+			t_sftextAdditionalTime.setString("+" + tostr(cWorld::m_fRemainingTime - 10.f));
+			t_sftextAdditionalTime.setPosition(sf::Vector2f(165.f, 5.f));
+			RW->draw(t_sftextAdditionalTime);
+		}
 	}
 	else
 	{
 		RW->clear();
+
+		sf::Text t_sftextGoodJob("Game Over", font);
+		t_sftextGoodJob.setScale(1.5f, 1.5f);
+		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 100.f));
+		RW->draw(t_sftextGoodJob);
+
+		t_sftextGoodJob.setString("You Scored");
+		t_sftextGoodJob.setScale(0.75f, 0.75f);
+		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 250.f));
+		RW->draw(t_sftextGoodJob);
+
+
+		t_sftextGoodJob.setString(tostr(cWorld::m_fTotalTime));
+		t_sftextGoodJob.setScale(1.5f, 1.5f);
+		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 290.f));
+		RW->draw(t_sftextGoodJob);
+		
+		t_sftextGoodJob.setString("Seconds");
+		t_sftextGoodJob.setScale(0.75f, 0.75f);
+		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 340.f));
+		RW->draw(t_sftextGoodJob);
 	}
 }
 
@@ -357,7 +406,7 @@ void cWorld::RestartGame()
 
 void cWorld::ResetTimers()
 {
-	cWorld::m_fStartTime = 100.f;
+	cWorld::m_fStartTime = 10.f;
 	cWorld::m_fTotalTime = 0.f;
 	cWorld::m_fRemainingTime = m_fStartTime;
 }
@@ -377,8 +426,8 @@ void cWorld::ResetPowerUpPosition()
 void cWorld::RepositionPowerUp()
 {
 	float t_fPosX = 49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x;
-	float t_fPosY = cRandom::GetRandomFloat(100.f,500.f);
-	std::cout << t_fPosX << "\t" << t_fPosY << std::endl;
+	float t_fPosYMax = 600.f - cTile::s_iTileSizeInPixels* cWorld::GetTerrainHeight(cWorldProperties::GetTerrainHeightFrequency() * t_fPosX);
+	float t_fPosY = cRandom::GetRandomFloat(10, t_fPosYMax);
 	cWorld::m_PowerUp.SetPosition(sf::Vector2f( t_fPosX , t_fPosY));
 	m_bPowerUpSpawned = true;
 	

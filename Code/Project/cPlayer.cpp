@@ -61,7 +61,7 @@ void cPlayer::Update (float deltaT)
 
 	if(cPlayer::m_vecPos.x < 300)
 	{
-		if(cPlayer::m_vecPos.x <= 0)
+		if(cPlayer::m_vecPos.x <= -20.f)
 		{
 			cPlayer::m_pWorld->EndGame();
 		}
