@@ -11,7 +11,7 @@ int main()
 	sf::Clock MyClock;
 	cWorld World;
 
-	sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(200, 200), "SFML works!");
+	sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600), "LD27!");
 
     while (window->isOpen())
     {

@@ -10,6 +10,9 @@ class cWorld
 {
 public:
 
+	cWorld();
+	~cWorld();
+
 	void LoadWorld ();
 
 	void GetInput (sf::Event& Event);
@@ -18,5 +21,16 @@ public:
 
 	void Draw ( sf::RenderWindow* RW);
 
+	void ChangeRemainingTime ( float deltaT);
+
+private:
 	cPlayer* m_pPlayer;
+
+	float m_fTotalTime;
+	float m_fRemainingTime;
+	float m_fStartTime;
+
+
+	
+
 };
