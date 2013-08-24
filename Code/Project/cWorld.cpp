@@ -11,6 +11,11 @@ cWorld::cWorld()
 {
 	cWorld::m_PerlinNoise = new cPerlinNoise(2, 3.f);
 
+	// Create background gradient
+	CreateColorGradient();
+	cWorld::m_BackgroundTexture.loadFromImage(cWorld::m_BackgroundGradient);
+	cWorld::m_BackgroundSprite.setTexture(cWorld::m_BackgroundTexture);
+
 	// load Sound
 	cWorld::m_BackgroundMusicIntro.openFromFile("sfx/LD27_Intro.ogg");
 	cWorld::m_BackgroundMusicLoop.openFromFile("sfx/LD27_Loop.ogg");
@@ -80,7 +85,7 @@ void cWorld::DeleteTiles()
 
 void cWorld::LoadWorld ()
 {
-	// create a randomly generated World
+	// Create a randomly generated World
 	DeleteTiles();
 	
 	// Generate the Bottom
@@ -187,6 +192,25 @@ void cWorld::Update (float deltaT)
 	}
 }
 
+void cWorld::CreateColorGradient()
+{
+	cWorld::m_Gradient.insert(0.0, sf::Color(152,245,255));
+	cWorld::m_Gradient.insert(1.0, sf::Color(0, 0, 0));
+
+	sf::Color* tab = new sf::Color[600];
+	cWorld::m_Gradient.fillTab(tab, 600);
+
+	cWorld::m_BackgroundGradient.create(800, 600);
+	
+	for(int i = 0; i < 800; i++)
+	{
+		for(int j = 0; j < 600; j++)
+		{
+			cWorld::m_BackgroundGradient.setPixel(i, j, tab[j]);
+		}		
+	}
+}
+
 
 void cWorld::MoveTheWorld(float deltaT)
 {
@@ -217,6 +241,8 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 {
 	if (!m_bGameOver)
 	{
+		RW->draw(cWorld::m_BackgroundSprite);
+
 		std::vector<sf::RectangleShape>::iterator itShapes;
 		for (	itShapes = m_vecBackgroundShapes.begin();
 				itShapes != m_vecBackgroundShapes.end();

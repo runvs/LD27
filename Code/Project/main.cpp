@@ -30,7 +30,8 @@ int main()
 
 		World.Update(t_fElapsedTimeInSeconds);
 
-		window->clear(sf::Color(152,245,255));
+		window->clear();
+
 		World.Draw(window);
 		window->display();
 		if (World.GetClose())

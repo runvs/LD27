@@ -84,6 +84,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cCollision.cpp" />
+    <ClCompile Include="cColorScale.cpp" />
     <ClCompile Include="cPerlinNoise.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cPowerUp.cpp" />
@@ -94,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cCollision.h" />
+    <ClInclude Include="cColorScale.h" />
     <ClInclude Include="cPerlinNoise.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cPlayerProperties.h" />

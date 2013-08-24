@@ -67,7 +67,8 @@ void cPlayer::Update (float deltaT)
 		}
 		else
 		{
-			cPlayer::m_vecVelocity.x += cPlayerProperties::GetPlayerRunFactor();
+			float factor = 1.f + ((300.f - cPlayer::m_vecPos.x) / 100);
+			cPlayer::m_vecVelocity.x += factor;
 		}
 	}
 	else

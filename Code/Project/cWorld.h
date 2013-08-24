@@ -7,6 +7,7 @@
 #include "cTile.h"
 #include "cPowerUp.h"
 #include "cPerlinNoise.h"
+#include "cColorScale.h"
 
 
 class cPlayer;
@@ -56,9 +57,15 @@ private:
 
 	void MoveTheWorld(float deltaT);
 	cPerlinNoise* m_PerlinNoise;
+	cColorScale m_Gradient;
 
 	void MoveTiles( sf::Vector2f vecDelta);
 	void MoveBackground(sf::Vector2f Delta);
+	
+	void CreateColorGradient();
+	sf::Image m_BackgroundGradient;
+	sf::Texture m_BackgroundTexture;
+	sf::Sprite m_BackgroundSprite;
 	
 	std::vector<cTile*> m_vecTiles;
 
