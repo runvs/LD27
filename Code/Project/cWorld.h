@@ -43,7 +43,10 @@ private:
 	std::vector<cTile*> m_vecTiles;
 
 	sf::Vector2f m_vecIncrementalWorldMovement;
-	sf::Vector2f m_vecKumulativeWorldMovement;
+	sf::Vector2f m_vecCumulativeWorldMovement;
+
+	int GetTerrainHeight(float xValue);
+	void AddTilesToTheEnd();
 
 	void DrawTime (sf::RenderWindow* RW);
 

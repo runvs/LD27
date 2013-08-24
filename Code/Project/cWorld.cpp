@@ -19,7 +19,7 @@ cWorld::cWorld()
 
 	/// world Vars
 	m_fWorldMoveSpeed = 1.5f;
-	m_vecKumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
+	m_vecCumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
 	LoadWorld();
 
 	/// Player
@@ -45,7 +45,7 @@ void cWorld::LoadWorld ()
 	{
 		for (int j = 1; j < 2; ++j)
 		{
-			pTile= new cTile(cTile::EARTH_BELOW);
+			pTile= new cTile(cTile::EARTH_TOP);
 			pTile->SetPosition(sf::Vector2f(cTile::s_iTileSizeInPixels * i, 600 - cTile::s_iTileSizeInPixels * j));  
 			cWorld::m_vecTiles.push_back(pTile);
 		}
@@ -104,7 +104,7 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 
 void cWorld::MoveTiles(sf::Vector2f Delta)
 {
-	m_vecKumulativeWorldMovement -= Delta;
+	m_vecCumulativeWorldMovement -= Delta;
 	m_vecIncrementalWorldMovement -= Delta;
 
 	std::vector<cTile*>::iterator it;
@@ -125,19 +125,7 @@ void cWorld::MoveTiles(sf::Vector2f Delta)
 
 	if( m_vecIncrementalWorldMovement.x >= cTile::s_iTileSizeInPixels)
 	{
-		m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
-		cTile* t_pTile = new cTile(cTile::EARTH_BELOW);
-
-		t_pTile->SetPosition(
-			sf::Vector2f(
-				49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x,
-				600 - cTile::s_iTileSizeInPixels
-			)
-		);
-
-		std::cout << t_pTile->GetPosition().x << Delta.x << std::endl;
-
-		m_vecTiles.push_back(t_pTile);
+		AddTilesToTheEnd();
 	}
 }
 
@@ -164,10 +152,43 @@ std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 		}
 	}
 
-	//std::cout << vecReturn.size() << std::endl;
 	return vecReturn;
 }
 
+int cWorld::GetTerrainHeight(float xValue)
+{
+	// Maybe perlin noise?
+
+	// Magic!
+	// Nope: sin ranges from -1 to 1 so we have to add 1 to avoid negative values.
+	// Now we've got values ranging from 0 to 2 -> divide by 2.
+	// We've got a vertical resolution of 600 pixels, each tile is 19 pixels high,
+	// leave about 5 tiles empty and divide the remainder by 19. Voilà!
+	// Oh and don't forget to add 1 afterwards. This is really magic.
+	return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
+}
+
+void cWorld::AddTilesToTheEnd()
+{
+	m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
+	cTile* t_pTile = new cTile(cTile::EARTH_TOP);
+	float xCoord = 49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x;
+	float yCoord = 600 - cTile::s_iTileSizeInPixels * GetTerrainHeight(0.01f * cWorld::m_vecCumulativeWorldMovement.x);
+
+	t_pTile->SetPosition(sf::Vector2f(xCoord, yCoord));
+
+	cWorld::m_vecTiles.push_back(t_pTile);
+
+	// Add tiles to the bottom of the top block
+	for(int i = 600;
+		i > yCoord;
+		i -= cTile::s_iTileSizeInPixels)
+	{
+		t_pTile = new cTile(cTile::EARTH_BELOW);
+		t_pTile->SetPosition(sf::Vector2f(xCoord, i));
+		cWorld::m_vecTiles.push_back(t_pTile);
+	}
+}
 
 void cWorld::DrawTime (sf::RenderWindow* RW)
 {
