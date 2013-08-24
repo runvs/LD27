@@ -8,16 +8,12 @@
 cWorld::cWorld()
 {
 	/// timing Vars
-	cWorld::m_fStartTime = 10.f;
-	cWorld::m_fTotalTime = 0.f;
-	cWorld::m_fRemainingTime = m_fStartTime;
+	cWorld::ResetTimers();
 
 	
 	/// Time Bar
 	cWorld::m_fTotalTimeBarLength = cWorldProperties::GetTimeBarLengthInPixels();
-
 	cWorld::m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength,30));
-
 	cWorld::m_pTimeBar->setFillColor(sf::Color::Green);
 	cWorld::m_pTimeBar->setPosition(10, 10);
 
@@ -26,6 +22,8 @@ cWorld::cWorld()
 	cWorld::m_fWorldMoveSpeed = cWorldProperties::GetWorldMoveSpeed();
 	m_vecCumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
 	LoadWorld();
+	m_bGameOver = false;
+	m_bClose = false;
 
 	/// Player
 	cWorld::m_pPlayer = new cPlayer();
@@ -41,12 +39,13 @@ cWorld::cWorld()
 cWorld::~cWorld()
 {
 	delete cWorld::m_pPlayer;
+	delete cWorld::m_pTimeBar;
 }
 
 void cWorld::LoadWorld ()
 {
 	// create a randomly generated World
-
+	cWorld::m_vecTiles.clear();
 	
 	// Generate the Bottom
 	cTile* pTile =  NULL;
@@ -64,61 +63,95 @@ void cWorld::LoadWorld ()
 
 void cWorld::GetInput (sf::Event& Event)
 {
-	cWorld::m_pPlayer->GetInput(Event);
+	if (!m_bGameOver)
+	{
+		cWorld::m_pPlayer->GetInput(Event);
+		if (Event.type == sf::Event::KeyReleased)
+		{
+			if(Event.key.code == sf::Keyboard::Escape)
+			{
+				EndGame(0.f);
+			}
+		}
+	}
+	else
+	{
+		if (Event.type == sf::Event::KeyReleased)
+		{
+			if(Event.key.code == sf::Keyboard::Escape)
+			{
+				cWorld::m_bClose = true;
+			}
+			else
+			{
+				cWorld::RestartGame();
+			}
+		}
+	}
 }
 
 void cWorld::Update (float deltaT)
 {
-	cWorld::m_pPlayer->Update(deltaT);
-	cWorld::m_fTotalTime += deltaT;
-	cWorld::m_fRemainingTime -= deltaT;
-
-	if(m_fPowerUpTimer >= 0.f)
+	if (!m_bGameOver)
 	{
-		cWorld::m_fPowerUpTimer -= deltaT;
-	}
+		cWorld::m_pPlayer->Update(deltaT);
+		cWorld::m_fTotalTime += deltaT;
+		cWorld::m_fRemainingTime -= deltaT;
 
-	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
-	cWorld::MoveTiles(t_vecTileMovement);
+		if(m_fPowerUpTimer >= 0.f)
+		{
+			cWorld::m_fPowerUpTimer -= deltaT;
+		}
 
-	float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
-	if (t_fTimeBarLenghtFactor < 0.f)
-	{
-		t_fTimeBarLenghtFactor = 0.f;
-		EndGame(m_fTotalTime);
-	}
-	else if ( t_fTimeBarLenghtFactor > 1.f )
-	{
-		t_fTimeBarLenghtFactor = 1.f;
+		sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
+		cWorld::MoveTiles(t_vecTileMovement);
 
-		// additional: draw time more than 10 seconds next to time bar
-	}
-	m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
+		float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
+		if (t_fTimeBarLenghtFactor < 0.f)
+		{
+			t_fTimeBarLenghtFactor = 0.f;
+			EndGame(m_fTotalTime);
+		}
+		else if ( t_fTimeBarLenghtFactor > 1.f )
+		{
+			t_fTimeBarLenghtFactor = 1.f;
+
+			// additional: draw time more than 10 seconds next to time bar
+		}
+		m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
 
 
-	if (m_fPowerUpTimer <= 0 && !m_bPowerUpSpawned)	// powerup is spawned
-	{
-		cWorld::RepositionPowerUp();
-	}
-	if (m_bPowerUpSpawned && m_PowerUp.GetPosition().x < -20)
-	{
-		ResetPowerUpPosition();	// move it out of the way
+		if (m_fPowerUpTimer <= 0 && !m_bPowerUpSpawned)	// powerup is spawned
+		{
+			cWorld::RepositionPowerUp();
+		}
+		if (m_bPowerUpSpawned && m_PowerUp.GetPosition().x < -20)
+		{
+			ResetPowerUpPosition();	// move it out of the way
+		}
 	}
 }
 
 void cWorld::Draw ( sf::RenderWindow* RW)
 {
-	std::vector<cTile*>::iterator it;
-	for (	it = m_vecTiles.begin();
-			it != m_vecTiles.end();
-			++it)
+	if (!m_bGameOver)
 	{
-		(*it)->Draw(RW);
-	}
-	cWorld::m_pPlayer->Draw(RW);
-	cWorld::m_PowerUp.Draw(RW);
+		std::vector<cTile*>::iterator it;
+		for (	it = m_vecTiles.begin();
+				it != m_vecTiles.end();
+				++it)
+		{
+			(*it)->Draw(RW);
+		}
+		cWorld::m_pPlayer->Draw(RW);
+		cWorld::m_PowerUp.Draw(RW);
 
-	cWorld::DrawTime(RW);
+		cWorld::DrawTime(RW);
+	}
+	else
+	{
+		RW->clear();
+	}
 }
 
 void cWorld::ChangeRemainingTime ( float deltaT)
@@ -225,7 +258,27 @@ void cWorld::DrawTime (sf::RenderWindow* RW)
 
 void cWorld::EndGame(float fScore)
 {
+	m_bGameOver = true;
+}
 
+void cWorld::RestartGame()
+{
+	LoadWorld();
+	m_bGameOver = false;
+	ResetTimers();
+	ResetPlayer();
+}
+
+void cWorld::ResetTimers()
+{
+	cWorld::m_fStartTime = 10.f;
+	cWorld::m_fTotalTime = 0.f;
+	cWorld::m_fRemainingTime = m_fStartTime;
+}
+
+void cWorld::ResetPlayer()
+{
+	cWorld::m_pPlayer->SetPosition(sf::Vector2f(300.f, 400.f));
 }
 
 void cWorld::ResetPowerUpPosition()

@@ -21,6 +21,8 @@ public:
 
 	inline void SetWorld ( cWorld* pWorld) {m_pWorld = pWorld;};
 
+	inline void SetPosition ( sf::Vector2f vec) {m_vecPos = vec; m_Sprite.setPosition(vec);};
+
 private:
 	sf::Vector2f m_vecPos;
 	sf::Vector2f m_vecVelocity;

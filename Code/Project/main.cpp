@@ -33,6 +33,12 @@ int main()
 		window->clear(sf::Color(152,245,255));
 		World.Draw(window);
 		window->display();
+		if (World.GetClose())
+		{
+			window->close();
+			break;
+		}
+
     }
 	delete window;
 

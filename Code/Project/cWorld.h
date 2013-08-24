@@ -33,6 +33,8 @@ public:
 
 	void ResetPowerUpPosition();
 
+	inline bool GetClose() {return m_bClose;};
+
 private:
 	cPlayer* m_pPlayer;
 
@@ -63,7 +65,13 @@ private:
 	sf::Shape* m_pTimeBar;
 	float m_fTotalTimeBarLength;
 
+	bool m_bGameOver;
+	bool m_bClose;
 	void EndGame(float fScore);
+	void RestartGame();
+	void ResetTimers();
+	void ResetPlayer();
+
 
 	void RepositionPowerUp();
 
