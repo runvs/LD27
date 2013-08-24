@@ -32,6 +32,7 @@ private:
 
 	void Jump ( void );
 	void Attack ( void );
+	sf::Vector2f GetOverlap(sf::Vector2f other);
 
 	cWorld* m_pWorld;
 	

@@ -17,6 +17,6 @@ struct cPlayerProperties
 
 	static float GetPlayerRunFactor()
 	{
-		return 0.1f;
+		return 0.8f;
 	}
 };

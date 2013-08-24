@@ -42,6 +42,15 @@ void cPlayer::Update (float deltaT)
 	cPlayer::Move(t_vecPositionChange);
 	cPlayer::m_vecVelocity.y += cPlayerProperties::GetFallingVelocity();
 	cPlayer::m_vecVelocity *= cPlayerProperties::GetFrictionCoefficient();
+
+	if(cPlayer::m_vecPos.x < 300)
+	{
+		cPlayer::m_vecVelocity.x += cPlayerProperties::GetPlayerRunFactor();
+	}
+	else
+	{
+		cPlayer::m_vecVelocity.x = 0;
+	}
 	
 	// Collision detection
 	if(cPlayer::m_pWorld != NULL)
@@ -55,11 +64,24 @@ void cPlayer::Update (float deltaT)
 		{
 			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
 			{
-				sf::Vector2f delta = (*it)->GetPosition() - cPlayer::m_vecPos;
+				sf::Vector2f overlap = GetOverlap((*it)->GetPosition());
+
+				if(std::abs(overlap.y) > std::abs(overlap.x))
+				{
+					if(overlap.x > 0)
+					{
+						if(overlap.x > cTile::s_iTileSizeInPixels)
+						{
+							t_vecPositionChange.x = overlap.x;
+						}
+					}
+				}
+
+				/*sf::Vector2f delta = (*it)->GetPosition() - cPlayer::m_vecPos;
 				if(delta.x < cTile::s_iTileSizeInPixels && delta.y < 0.0f)
 				{
-					t_vecPositionChange.x = delta.x * 2;
-				}
+					t_vecPositionChange.x = cTile::s_iTileSizeInPixels - delta.x;
+				}*/
 
 				cPlayer::Move(-t_vecPositionChange);
 				cPlayer::m_vecVelocity.y = 0.f;
@@ -70,6 +92,37 @@ void cPlayer::Update (float deltaT)
 	{
 		std::cout << "No World" << std::endl;
 	}
+}
+
+sf::Vector2f cPlayer::GetOverlap(sf::Vector2f otherMin)
+{
+	sf::Vector2f overlap;
+	sf::Vector2f min = cPlayer::m_vecPos;
+	sf::Vector2f max = sf::Vector2f(
+		cPlayer::m_vecPos.x + cTile::s_iTileSizeInPixels,
+		cPlayer::m_vecPos.y + cTile::s_iTileSizeInPixels
+	);
+
+	sf::Vector2f otherMax = sf::Vector2f(
+		otherMin.x + cTile::s_iTileSizeInPixels,
+		otherMin.y + cTile::s_iTileSizeInPixels
+	);
+
+	overlap.x = std::max(min.x, otherMin.x) - std::min(max.x, otherMax.x); 
+	overlap.y = std::max(min.y, otherMin.y) - std::min(max.y, otherMax.y);              
+	                
+                
+	if(otherMin.x < min.x)
+	{
+		overlap.x = -overlap.x;
+	}
+
+	if(otherMin.y < min.y)
+	{
+		overlap.y = -overlap.y;
+	}
+	                
+	return overlap;
 }
 
 void cPlayer::Draw ( sf::RenderWindow* RW)

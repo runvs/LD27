@@ -204,9 +204,9 @@ std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 		float deltaX = position.x - (*it)->GetPosition().x;
 		float deltaY = position.y - (*it)->GetPosition().y;
 
-		if(deltaX > -100 && deltaX < 100)
+		if(deltaX > -50 && deltaX < 50)
 		{
-			if(deltaY > -100 && deltaY < 100)
+			if(deltaY > -50 && deltaY < 50)
 			{
 				vecReturn.push_back((*it));
 			}
