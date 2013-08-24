@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cCollision.cpp" />
     <ClCompile Include="cPlayer.cpp" />
     <ClCompile Include="cRandom.cpp" />
     <ClCompile Include="cTile.cpp" />
@@ -90,7 +91,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cCollision.h" />
     <ClInclude Include="cPlayer.h" />
+    <ClInclude Include="cPlayerProperties.h" />
     <ClInclude Include="cRandom.h" />
     <ClInclude Include="cTile.h" />
     <ClInclude Include="cUtility.h" />

@@ -25,6 +25,9 @@ public:
 	void SetIndex(sf::Vector2i vector);
 	sf::Vector2i GetIndex();
 
+	// Getter for the tile's sprite address
+	sf::Sprite& GetSprite() { return m_Sprite; };
+
 private:
 	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;

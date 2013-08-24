@@ -108,3 +108,30 @@ void cWorld::MoveTiles( sf::Vector2f Delta)
 		m_vecTiles.push_back(t_pTile);
 	}
 }
+
+
+
+std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
+{
+	std::vector<cTile*> vecReturn;
+
+	std::vector<cTile*>::iterator it;
+	for(it = m_vecTiles.begin();
+		it != m_vecTiles.end();
+		++it)
+	{
+		float deltaX = position.x - (*it)->GetPosition().x;
+		float deltaY = position.y - (*it)->GetPosition().y;
+
+		if(deltaX > -100 && deltaX < 100)
+		{
+			if(deltaY > -100 && deltaY < 100)
+			{
+				vecReturn.push_back((*it));
+			}
+		}
+	}
+
+	std::cout << vecReturn.size() << std::endl;
+	return vecReturn;
+}

@@ -3,13 +3,14 @@
 
 #include "cPlayer.h"
 #include "cWorld.h"
-
+#include "cPlayerProperties.h"
+#include "cCollision.h"
 
 cPlayer::cPlayer()
 {
 	LoadPlayer();
 	m_vecPos = sf::Vector2f(300.f, 400.f);
-	m_vecJumpVelocityAdd = sf::Vector2f(0, -500.f);
+	m_vecJumpVelocityAdd = sf::Vector2f(0, cPlayerProperties::GetJumpVelocity());
 	m_pWorld = NULL;
 }
 
@@ -39,8 +40,26 @@ void cPlayer::Update (float deltaT)
 {
 	sf::Vector2f t_vecPositionChange = cPlayer::m_vecVelocity * deltaT;
 	cPlayer::Move(t_vecPositionChange);
-	cPlayer::m_vecVelocity *= 0.99f;
+	cPlayer::m_vecVelocity.y += cPlayerProperties::GetFallingVelocity();
+	cPlayer::m_vecVelocity *= cPlayerProperties::GetFrictionCoefficient();
 	//std::cout << t_vecPositionChange.x << "\t" << t_vecPositionChange.y << std::endl;
+	
+	// Collision detection
+	if(cPlayer::m_pWorld != NULL)
+	{
+		std::vector<cTile*> tilesInProximity = cPlayer::m_pWorld->GetTilesInProximity(cPlayer::m_vecPos);
+
+		std::vector<cTile*>::iterator it;
+		for(it = tilesInProximity.begin();
+			it != tilesInProximity.end();
+			++it)
+		{
+			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
+			{
+				cPlayer::Move(-t_vecPositionChange);
+			}
+		}
+	}
 }
 
 void cPlayer::Draw ( sf::RenderWindow* RW)

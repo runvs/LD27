@@ -23,9 +23,11 @@ public:
 
 	void Update (float deltaT);
 
-	void Draw ( sf::RenderWindow* RW);
+	void Draw (sf::RenderWindow* RW);
 
-	void ChangeRemainingTime ( float deltaT);
+	void ChangeRemainingTime (float deltaT);
+
+	std::vector<cTile*> GetTilesInProximity(sf::Vector2f position);
 
 private:
 	cPlayer* m_pPlayer;
