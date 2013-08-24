@@ -102,7 +102,7 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 }
 
 
-void cWorld::MoveTiles( sf::Vector2f Delta)
+void cWorld::MoveTiles(sf::Vector2f Delta)
 {
 	m_vecKumulativeWorldMovement -= Delta;
 	m_vecIncrementalWorldMovement -= Delta;
@@ -128,7 +128,14 @@ void cWorld::MoveTiles( sf::Vector2f Delta)
 		m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
 		cTile* t_pTile = new cTile(cTile::EARTH_BELOW);
 
-		t_pTile->SetPosition(sf::Vector2f(m_vecIncrementalWorldMovement.x + 49.f * cTile::s_iTileSizeInPixels, 600.f - cTile::s_iTileSizeInPixels ));
+		t_pTile->SetPosition(
+			sf::Vector2f(
+				49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x,
+				600 - cTile::s_iTileSizeInPixels
+			)
+		);
+
+		std::cout << t_pTile->GetPosition().x << Delta.x << std::endl;
 
 		m_vecTiles.push_back(t_pTile);
 	}
