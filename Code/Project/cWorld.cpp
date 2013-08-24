@@ -98,7 +98,7 @@ void cWorld::GetInput (sf::Event& Event)
 		{
 			if(Event.key.code == sf::Keyboard::Escape)
 			{
-				EndGame(0.f);
+				EndGame();
 			}
 		}
 	}
@@ -143,7 +143,7 @@ void cWorld::Update (float deltaT)
 		if (t_fTimeBarLenghtFactor < 0.f)
 		{
 			t_fTimeBarLenghtFactor = 0.f;
-			EndGame(m_fTotalTime);
+			EndGame();
 		}
 		else if ( t_fTimeBarLenghtFactor > 1.f )
 		{
@@ -294,7 +294,7 @@ void cWorld::DrawTime (sf::RenderWindow* RW)
 	RW->draw(*m_pTimeBar);
 }
 
-void cWorld::EndGame(float fScore)
+void cWorld::EndGame()
 {
 	m_bGameOver = true;
 }

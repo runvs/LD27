@@ -61,7 +61,14 @@ void cPlayer::Update (float deltaT)
 
 	if(cPlayer::m_vecPos.x < 300)
 	{
-		cPlayer::m_vecVelocity.x += cPlayerProperties::GetPlayerRunFactor();
+		if(cPlayer::m_vecPos.x <= 0)
+		{
+			cPlayer::m_pWorld->EndGame();
+		}
+		else
+		{
+			cPlayer::m_vecVelocity.x += cPlayerProperties::GetPlayerRunFactor();
+		}
 	}
 	else
 	{

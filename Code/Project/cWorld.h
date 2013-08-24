@@ -35,6 +35,8 @@ public:
 	void ResetPowerUpPosition();
 
 	inline bool GetClose() {return m_bClose;};
+	
+	void EndGame();
 
 private:
 	cPlayer* m_pPlayer;
@@ -68,7 +70,6 @@ private:
 
 	bool m_bGameOver;
 	bool m_bClose;
-	void EndGame(float fScore);
 	void RestartGame();
 	void ResetTimers();
 	void ResetPlayer();
