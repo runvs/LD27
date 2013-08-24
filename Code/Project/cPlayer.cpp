@@ -42,8 +42,6 @@ void cPlayer::Update (float deltaT)
 	cPlayer::Move(t_vecPositionChange);
 	cPlayer::m_vecVelocity.y += cPlayerProperties::GetFallingVelocity();
 	cPlayer::m_vecVelocity *= cPlayerProperties::GetFrictionCoefficient();
-	//std::cout << t_vecPositionChange.x << "\t" << t_vecPositionChange.y << std::endl;
-	
 	
 	// Collision detection
 	if(cPlayer::m_pWorld != NULL)
@@ -57,15 +55,15 @@ void cPlayer::Update (float deltaT)
 		{
 			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
 			{
+				sf::Vector2f delta = (*it)->GetPosition() - cPlayer::m_vecPos;
+				if(delta.x < cTile::s_iTileSizeInPixels && delta.y < 0.0f)
+				{
+					t_vecPositionChange.x = delta.x * 2;
+				}
+
 				cPlayer::Move(-t_vecPositionChange);
 				cPlayer::m_vecVelocity.y = 0.f;
 			}
-		}
-
-		if( Collision::BoundingBoxTest(cPlayer::m_pWorld->GetPowerUp(), cPlayer::m_Sprite))
-		{
-			m_pWorld->ChangeRemainingTime(+0.5f);
-			m_pWorld->ResetPowerUpPosition();
 		}
 	}
 	else

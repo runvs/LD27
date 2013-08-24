@@ -17,7 +17,7 @@ struct cWorldProperties
 
 	static float GetWorldMoveSpeed()
 	{
-		return 2.5f;
+		return 1.5f;
 	}
 
 	static float GetTerrainHeightFrequency()

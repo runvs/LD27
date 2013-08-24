@@ -3,7 +3,7 @@
 
 cPowerUp::cPowerUp()
 {
-	cPowerUp::m_Texture.loadFromFile("gfx/Enemy.png");
+	cPowerUp::m_Texture.loadFromFile("gfx/Powerup.png");
 	cPowerUp::m_Sprite.setTexture(cPowerUp::m_Texture);
 }
 
