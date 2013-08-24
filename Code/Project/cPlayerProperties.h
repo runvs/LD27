@@ -9,11 +9,11 @@ struct cPlayerProperties
 
 	static float GetFrictionCoefficient()
 	{
-		return 1.f;
+		return 0.95f;
 	}
 
 	static float GetFallingVelocity()
 	{
-		return 2.0f;
+		return 4.0f;
 	}
 };

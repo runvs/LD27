@@ -9,6 +9,13 @@ cWorld::cWorld()
 	m_fTotalTime = 0.f;
 	m_fRemainingTime = m_fStartTime;
 
+	m_fTotalTimeBarLength = 150;
+
+	m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength,30));
+
+	m_pTimeBar->setFillColor(sf::Color::Green);
+	m_pTimeBar->setPosition(10, 10);
+
 
 	/// world Vars
 	m_fWorldMoveSpeed = 1.5f;
@@ -59,6 +66,20 @@ void cWorld::Update (float deltaT)
 	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
 	cWorld::MoveTiles(t_vecTileMovement);
 
+	float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
+	if (t_fTimeBarLenghtFactor < 0.f)
+	{
+		t_fTimeBarLenghtFactor = 0.f;
+		EndGame(m_fTotalTime);
+	}
+	else if ( t_fTimeBarLenghtFactor > 1.f )
+	{
+		t_fTimeBarLenghtFactor = 1.f;
+
+		// additional: draw time next to time bar
+	}
+	m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
+
 }
 
 void cWorld::Draw ( sf::RenderWindow* RW)
@@ -72,6 +93,7 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 	}
 	cWorld::m_pPlayer->Draw(RW);
 
+	cWorld::DrawTime(RW);
 }
 
 void cWorld::ChangeRemainingTime ( float deltaT)
@@ -93,7 +115,9 @@ void cWorld::MoveTiles( sf::Vector2f Delta)
 		(*it)->SetPosition((*it)->GetPosition() + Delta);
 		if ((*it)->GetPosition().x <= - cTile::s_iTileSizeInPixels * 3 )
 		{
+			delete (*it);
 			it = m_vecTiles.erase(it);
+			
 			if (it == m_vecTiles.end())
 				break;
 		}
@@ -135,4 +159,15 @@ std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 
 	//std::cout << vecReturn.size() << std::endl;
 	return vecReturn;
+}
+
+
+void cWorld::DrawTime (sf::RenderWindow* RW)
+{
+	RW->draw(*m_pTimeBar);
+}
+
+void cWorld::EndGame(float fScore)
+{
+
 }

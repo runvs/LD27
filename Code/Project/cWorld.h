@@ -45,4 +45,11 @@ private:
 	sf::Vector2f m_vecIncrementalWorldMovement;
 	sf::Vector2f m_vecKumulativeWorldMovement;
 
+	void DrawTime (sf::RenderWindow* RW);
+
+	sf::Shape* m_pTimeBar;
+	float m_fTotalTimeBarLength;
+
+	void EndGame(float fScore);
+
 };
