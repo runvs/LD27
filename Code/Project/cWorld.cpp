@@ -123,7 +123,7 @@ void cWorld::LoadWorld ()
 		float t_fHeight = (Perlin.CreateNoise(cWorldProperties::BackgroundShapeWidth()*i) + 1.f ) * 100.f+ 350.f;
 		sf::RectangleShape t_shapeBackground(sf::Vector2f(cWorldProperties::BackgroundShapeWidth(), t_fHeight ));
 		t_shapeBackground.setPosition(cWorldProperties::BackgroundShapeWidth()*i, 600.f- t_fHeight);
-		t_shapeBackground.setFillColor(sf::Color(142,225,235));
+		t_shapeBackground.setFillColor(sf::Color(142, 225, 235, 105));
 		m_vecBackgroundShapes.push_back(t_shapeBackground);
 	}
 }
@@ -194,8 +194,8 @@ void cWorld::Update (float deltaT)
 
 void cWorld::CreateColorGradient()
 {
-	cWorld::m_Gradient.insert(0.0, sf::Color(152,245,255));
-	cWorld::m_Gradient.insert(1.0, sf::Color(0, 0, 0));
+	cWorld::m_Gradient.insert(0.0, sf::Color(140, 217, 168));
+	cWorld::m_Gradient.insert(1.0, sf::Color(221, 247, 130));
 
 	sf::Color* tab = new sf::Color[600];
 	cWorld::m_Gradient.fillTab(tab, 600);
