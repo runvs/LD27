@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Scripts
 {
-    public class GameLogic : ObjectComponent
+    public class GameLogic : GameObject
     {
         /// <summary>
         /// The Player's Time which is left for gaming
@@ -51,7 +51,7 @@ namespace Scripts
 
             // TODO: update your component logic
             RemainingTimeInMilliSeconds -= gameTime.ElapsedGameTime.Milliseconds;
-
+            
             // Console.WriteLine(RemainingTimeInMilliSeconds);
         }
 
