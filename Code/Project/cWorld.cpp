@@ -238,8 +238,18 @@ int cWorld::GetTerrainHeight(float xValue)
 	// We've got a vertical resolution of 600 pixels, each tile is 19 pixels high,
 	// leave about 5 tiles empty and divide the remainder by 19. Voilà!
 	// Oh and don't forget to add 1 afterwards. This is really magic.
-	return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
+	//return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
+	return static_cast<int>((FindNoise(1, xValue, xValue) + 1.f) / 2.f * 26.f) + 1;
 }
+
+float cWorld::FindNoise(int seed, float x, float y)
+{
+   int n = (int)x + (int)y * 57;
+   n = (n << 13) ^ n;
+   
+   int nn = (n * (n * n * seed + 19990303 * seed) + 1376312589) & 0x7fffffff;
+   return 1.0f - ((float)nn / 1073741824.0f);
+};
 
 void cWorld::AddTilesToTheEnd()
 {

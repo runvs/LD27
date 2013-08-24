@@ -22,6 +22,11 @@ struct cWorldProperties
 
 	static float GetTerrainHeightFrequency()
 	{
-		return 0.005f;
+		return 0.05f;
+	}
+
+	static float GetPowerUpTime()
+	{
+		return 15.f;
 	}
 };

@@ -59,6 +59,7 @@ private:
 	sf::Vector2f m_vecCumulativeWorldMovement;
 
 	int GetTerrainHeight(float xValue);
+	float FindNoise(int seed, float x, float y);
 	void AddTilesToTheEnd();
 
 	void DrawTime (sf::RenderWindow* RW);

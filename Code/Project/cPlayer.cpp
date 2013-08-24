@@ -4,6 +4,7 @@
 #include "cPlayer.h"
 #include "cWorld.h"
 #include "cPlayerProperties.h"
+#include "cWorldProperties.h"
 #include "cCollision.h"
 
 cPlayer::cPlayer()
@@ -81,6 +82,12 @@ void cPlayer::Update (float deltaT)
 				cPlayer::Move(-t_vecPositionChange/2.f);
 				cPlayer::m_vecVelocity.y *= 0.1f;
 			}
+		}
+
+		if( Collision::BoundingBoxTest(cPlayer::m_pWorld->GetPowerUp(), cPlayer::m_Sprite))
+		{
+			m_pWorld->ChangeRemainingTime(cWorldProperties::GetPowerUpTime());
+			m_pWorld->ResetPowerUpPosition();
 		}
 	}
 	else
