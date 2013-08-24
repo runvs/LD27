@@ -1,12 +1,14 @@
+#pragma once
+
 class cPerlinNoise
 {
 public:
-	cPerlinNoise(int iOctaves, int iPersistence);
+	cPerlinNoise(int iOctaves, float fPersistence);
 	float CreateNoise(float fX);
 
 private:
 	int m_iOctaves;
-	int m_iPersistence;
+	float m_fPersistence;
 
 	float SmoothNoise(float fX, float fY, int iFunction);
 	float Noise(int iX, int iY, int iFunction);

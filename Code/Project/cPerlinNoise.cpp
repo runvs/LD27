@@ -2,10 +2,10 @@
 
 #include "cPerlinNoise.h"
 
-cPerlinNoise::cPerlinNoise(int iOctaves, int iPersistence)
+cPerlinNoise::cPerlinNoise(int iOctaves, float fPersistence)
 {
 	m_iOctaves     = iOctaves;
-	m_iPersistence = iPersistence;
+	m_fPersistence = fPersistence;
 }
 
 float cPerlinNoise::Noise(int iX, int iY, int iFunction)
@@ -37,19 +37,31 @@ float cPerlinNoise::Noise(int iX, int iY, int iFunction)
 
 float cPerlinNoise::SmoothNoise(float fX, float fY, int iFunction)
 {
-	float fCorners = ( Noise(fX - 1, fY - 1, iFunction) + Noise(fX + 1, fY - 1, iFunction) + Noise(fX - 1, fY + 1, iFunction) + Noise(fX + 1, fY + 1, iFunction) ) / 16;
-	float fSides   = ( Noise(fX - 1, fY    , iFunction) + Noise(fX + 1, fY    , iFunction) + Noise(fX    , fY - 1, iFunction) + Noise(fX    , fY - 1, iFunction) ) / 8;
-	float fCenter  = Noise(fX, fY, iFunction) / 4;
+	float fCorners = (
+		  Noise(fX - 1, fY - 1, iFunction)
+		+ Noise(fX + 1, fY - 1, iFunction)
+		+ Noise(fX - 1, fY + 1, iFunction)
+		+ Noise(fX + 1, fY + 1, iFunction)
+	) / 16;
+
+	float fSides = (
+		  Noise(fX - 1, fY    , iFunction)
+		+ Noise(fX + 1, fY    , iFunction)
+		+ Noise(fX    , fY - 1, iFunction)
+		+ Noise(fX    , fY - 1, iFunction)
+	) / 8;
+
+	float fCenter = Noise(fX, fY, iFunction) / 4;
 
 	return fCorners + fSides + fCenter;
 }
 
 float cPerlinNoise::InterpolateNoise(float fX, float fY, int iFunction)
 {
-    int iX             = static_cast<int>(fX);
+    int   iX           = static_cast<int>(fX);
     float fFractionalX = fX - iX;
 
-    int iY             = static_cast<int>(fY);
+    int   iY           = static_cast<int>(fY);
     float fFractionalY = fY - iY;
 
     float v1 = SmoothNoise(iX    , iY    , iFunction);
@@ -78,7 +90,7 @@ float cPerlinNoise::CreateNoise(float fX)
     for(int i = 0; i < m_iOctaves - 1; ++i)
     {
         float frequency = std::pow(2.0, i);
-        float amplitude = std::pow(static_cast<float>(m_iPersistence), i);
+        float amplitude = std::pow(m_fPersistence, i);
 
         total += InterpolateNoise(fX * frequency, fX * frequency, i) * amplitude;
     }

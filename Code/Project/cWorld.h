@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include "cTile.h"
 #include "cPowerUp.h"
+#include "cPerlinNoise.h"
 
 
 class cPlayer;
@@ -52,6 +53,8 @@ private:
 	float m_fPowerUpTimerMax;
 
 	float m_fWorldMoveSpeed;
+
+	cPerlinNoise* m_PerlinNoise;
 
 	void MoveTiles( sf::Vector2f vecDelta);
 	void MoveBackground(sf::Vector2f Delta);

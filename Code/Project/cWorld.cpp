@@ -4,12 +4,13 @@
 #include "cWorld.h"
 #include "cPlayer.h"
 #include "cRandom.h"
-#include "cPerlinNoise.h"
 
 #include "cWorldProperties.h"
 
 cWorld::cWorld()
 {
+	cWorld::m_PerlinNoise = new cPerlinNoise(2, 3.f);
+
 	// load Sound
 	cWorld::m_BackgroundMusicIntro.openFromFile("sfx/LD27_Intro.ogg");
 	cWorld::m_BackgroundMusicLoop.openFromFile("sfx/LD27_Loop.ogg");
@@ -22,7 +23,7 @@ cWorld::cWorld()
 	
 	/// Time Bar
 	cWorld::m_fTotalTimeBarLength = cWorldProperties::GetTimeBarLengthInPixels();
-	cWorld::m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength,30));
+	cWorld::m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength, 30));
 	cWorld::m_pTimeBar->setFillColor(sf::Color::Green);
 	cWorld::m_pTimeBar->setPosition(10, 10);
 
@@ -58,6 +59,7 @@ cWorld::~cWorld()
 	DeleteTiles();
 	delete cWorld::m_pPlayer;
 	delete cWorld::m_pTimeBar;
+	delete cWorld::m_PerlinNoise;
 	m_vecBackgroundShapes.clear();
 }
 
@@ -309,18 +311,7 @@ std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 
 int cWorld::GetTerrainHeight(float xValue)
 {
-	// Maybe perlin noise?
-
-	// Magic!
-	// Nope: sin ranges from -1 to 1 so we have to add 1 to avoid negative values.
-	// Now we've got values ranging from 0 to 2 -> divide by 2.
-	// We've got a vertical resolution of 600 pixels, each tile is 19 pixels high,
-	// leave about 5 tiles empty and divide the remainder by 19. Voilà!
-	// Oh and don't forget to add 1 afterwards. This is really magic.
-	//return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
-	cPerlinNoise perlin(2, 3);
-	float noise = perlin.CreateNoise(xValue);
-	//float noise = SmoothNoise(time(NULL), xValue, xValue);
+	float noise = cWorld::m_PerlinNoise->CreateNoise(xValue);
 	return static_cast<int>((noise + 1.f) / 2.f * 26.f) + 1;
 }
 
