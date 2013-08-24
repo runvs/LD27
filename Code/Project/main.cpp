@@ -3,25 +3,37 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "cWorld.h"
+#include "cPlayer.h"
+
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+	sf::Clock MyClock;
+	cWorld World;
 
-    while (window.isOpen())
+	sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(200, 200), "SFML works!");
+
+    while (window->isOpen())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
+		float  t_fElapsedTimeInSeconds = MyClock.getElapsedTime().asSeconds();
+		MyClock.restart();
+        sf::Event MyEvent;
+        while (window->pollEvent(MyEvent))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
+            if (MyEvent.type == sf::Event::Closed)
+                window->close();
+
+			World.GetInput(MyEvent);
         }
 
-        window.clear();
-        window.draw(shape);
-        window.display();
+		World.Update(t_fElapsedTimeInSeconds);
+
+
+        window->clear();
+		World.Draw(window);
+		window->display();
     }
+	delete window;
 
     return 0;
 }

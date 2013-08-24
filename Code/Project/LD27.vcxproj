@@ -83,7 +83,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cRandom.cpp" />
+    <ClCompile Include="cTile.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cPlayer.h" />
+    <ClInclude Include="cRandom.h" />
+    <ClInclude Include="cTile.h" />
+    <ClInclude Include="cWorld.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
