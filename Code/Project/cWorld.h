@@ -1,7 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include <SFML/Graphics.hpp>
 #include "cTile.h"
+
+
 
 class cPlayer;
 
@@ -30,7 +34,13 @@ private:
 	float m_fRemainingTime;
 	float m_fStartTime;
 
+	float m_fWorldMoveSpeed;
 
+	void MoveTiles( sf::Vector2f vecDelta);
 	
+	std::vector<cTile*> m_vecTiles;
+
+	sf::Vector2u m_vecWorldSize;
+
 
 };

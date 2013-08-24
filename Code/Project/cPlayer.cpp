@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include "cPlayer.h"
 #include "cWorld.h"
@@ -8,6 +9,7 @@ cPlayer::cPlayer()
 {
 	LoadPlayer();
 	m_vecPos = sf::Vector2f(300.f, 400.f);
+	m_vecJumpVelocityAdd = sf::Vector2f(0, -500.f);
 	m_pWorld = NULL;
 }
 
@@ -37,6 +39,8 @@ void cPlayer::Update (float deltaT)
 {
 	sf::Vector2f t_vecPositionChange = cPlayer::m_vecVelocity * deltaT;
 	cPlayer::Move(t_vecPositionChange);
+	cPlayer::m_vecVelocity *= 0.99f;
+	//std::cout << t_vecPositionChange.x << "\t" << t_vecPositionChange.y << std::endl;
 }
 
 void cPlayer::Draw ( sf::RenderWindow* RW)
@@ -52,7 +56,7 @@ void cPlayer::Move (sf::Vector2f vecDelta)
 
 void cPlayer::Jump ( void )
 {
-
+	cPlayer::m_vecVelocity += m_vecJumpVelocityAdd;
 }
 
 void cPlayer::Attack ( void )

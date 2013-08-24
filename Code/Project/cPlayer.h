@@ -32,5 +32,8 @@ private:
 	void Attack ( void );
 
 	cWorld* m_pWorld;
+	
+	sf::Vector2f m_vecJumpVelocityAdd;
+
 
 };
