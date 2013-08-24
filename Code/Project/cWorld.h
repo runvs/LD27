@@ -54,6 +54,7 @@ private:
 	float m_fWorldMoveSpeed;
 
 	void MoveTiles( sf::Vector2f vecDelta);
+	void MoveBackground(sf::Vector2f Delta);
 	
 	std::vector<cTile*> m_vecTiles;
 
@@ -65,6 +66,8 @@ private:
 
 	void DrawTime (sf::RenderWindow* RW);
 
+	std::vector<sf::RectangleShape> m_vecBackgroundShapes;
+
 	sf::Shape* m_pTimeBar;
 	float m_fTotalTimeBarLength;
 
@@ -75,6 +78,9 @@ private:
 	void ResetPlayer();
 
 	void RepositionPowerUp();
+
+	void DeleteTiles();
+
 
 	sf::Music m_BackgroundMusicIntro;
 	sf::Music m_BackgroundMusicLoop;

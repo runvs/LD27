@@ -48,18 +48,39 @@ cWorld::cWorld()
 
 	cWorld::m_BackgroundMusicIntro.play();
 
+
+
 }
 
 cWorld::~cWorld()
 {
+
+	DeleteTiles();
 	delete cWorld::m_pPlayer;
 	delete cWorld::m_pTimeBar;
+	m_vecBackgroundShapes.clear();
+}
+
+void cWorld::DeleteTiles()
+{
+	std::vector<cTile*>::iterator it;
+	for (	it = m_vecTiles.begin();
+			it != m_vecTiles.end();
+			++it)
+	{
+		delete (*it);
+		it = m_vecTiles.erase(it);
+		if(it ==m_vecTiles.end())
+			break;
+	}
+	cWorld::m_vecTiles.clear();
+
 }
 
 void cWorld::LoadWorld ()
 {
 	// create a randomly generated World
-	cWorld::m_vecTiles.clear();
+	DeleteTiles();
 	
 	// Generate the Bottom
 	cTile* t_pTile = NULL;
@@ -86,6 +107,18 @@ void cWorld::LoadWorld ()
 			t_pTile->SetPosition(sf::Vector2f(xCoord, i));
 			cWorld::m_vecTiles.push_back(t_pTile);
 		}
+	}
+
+	cPerlinNoise Perlin(3,3);
+	// Create Background Shapes
+	for (int i = 0; i <= 45; ++i)
+	{
+		
+		float t_fHeight = (Perlin.CreateNoise(cWorldProperties::BackgroundShapeWidth()*i) + 1.f ) * 100.f+ 350.f;
+		sf::RectangleShape t_shapeBackground(sf::Vector2f(cWorldProperties::BackgroundShapeWidth(), t_fHeight ));
+		t_shapeBackground.setPosition(cWorldProperties::BackgroundShapeWidth()*i, 600.f- t_fHeight);
+		t_shapeBackground.setFillColor(sf::Color(142,225,235));
+		m_vecBackgroundShapes.push_back(t_shapeBackground);
 	}
 }
 
@@ -124,7 +157,6 @@ void cWorld::Update (float deltaT)
 	{
 		if (m_BackgroundMusicIntro.getStatus() == sf::Sound::Stopped && m_BackgroundMusicLoop.getStatus() == sf::Sound::Stopped )
 		{
-			
 			m_BackgroundMusicLoop.play();
 		}
 		cWorld::m_pPlayer->Update(deltaT);
@@ -138,6 +170,7 @@ void cWorld::Update (float deltaT)
 
 		sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
 		cWorld::MoveTiles(t_vecTileMovement);
+		cWorld::MoveBackground(t_vecTileMovement);
 
 		float t_fTimeBarLenghtFactor = m_fRemainingTime/ 10.f;
 		if (t_fTimeBarLenghtFactor < 0.f)
@@ -169,6 +202,14 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 {
 	if (!m_bGameOver)
 	{
+		std::vector<sf::RectangleShape>::iterator itShapes;
+		for (	itShapes = m_vecBackgroundShapes.begin();
+				itShapes != m_vecBackgroundShapes.end();
+				++itShapes)
+		{
+			RW->draw((*itShapes));
+		}
+
 		// Render tiles
 		std::vector<cTile*>::iterator it;
 		for (	it = m_vecTiles.begin();
@@ -196,13 +237,29 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 	m_fRemainingTime += deltaT;
 }
 
+void cWorld::MoveBackground(sf::Vector2f Delta)
+{
+	std::vector<sf::RectangleShape>::iterator itShapes;
+	for (	itShapes = m_vecBackgroundShapes.begin();
+			itShapes != m_vecBackgroundShapes.end();
+			++itShapes)
+	{
+		(itShapes)->setPosition((itShapes)->getPosition() + Delta * 0.5f);
+		if( itShapes->getPosition().x <= - itShapes->getSize().x)
+		{
+			itShapes->setPosition(itShapes->getPosition().x + itShapes->getSize().x * m_vecBackgroundShapes.size(), itShapes->getPosition().y);
+		}
+	}
+}
+
 void cWorld::MoveTiles(sf::Vector2f Delta)
 {
 	m_vecCumulativeWorldMovement -= Delta;
 	m_vecIncrementalWorldMovement -= Delta;
 
-
 	m_PowerUp.SetPosition(m_PowerUp.GetPosition() + Delta);
+
+
 
 	std::vector<cTile*>::iterator it;
 	for (	it = m_vecTiles.begin();
