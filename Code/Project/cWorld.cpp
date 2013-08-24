@@ -1,3 +1,5 @@
+#include<time.h>
+
 #include "cUtility.h"
 #include "cWorld.h"
 #include "cPlayer.h"
@@ -239,7 +241,7 @@ int cWorld::GetTerrainHeight(float xValue)
 	// leave about 5 tiles empty and divide the remainder by 19. Voilà!
 	// Oh and don't forget to add 1 afterwards. This is really magic.
 	//return static_cast<int>((std::sin(xValue) + 1.f) / 2.f * 26.f) + 1;
-	return static_cast<int>((FindNoise(1, xValue, xValue) + 1.f) / 2.f * 26.f) + 1;
+	return static_cast<int>((FindNoise(time(NULL), xValue, xValue) + 1.f) / 2.f * 26.f) + 1;
 }
 
 float cWorld::FindNoise(int seed, float x, float y)
