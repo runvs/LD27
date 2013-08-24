@@ -44,6 +44,7 @@ void cPlayer::Update (float deltaT)
 	cPlayer::m_vecVelocity *= cPlayerProperties::GetFrictionCoefficient();
 	//std::cout << t_vecPositionChange.x << "\t" << t_vecPositionChange.y << std::endl;
 	
+	
 	// Collision detection
 	if(cPlayer::m_pWorld != NULL)
 	{
@@ -57,8 +58,13 @@ void cPlayer::Update (float deltaT)
 			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
 			{
 				cPlayer::Move(-t_vecPositionChange);
+				cPlayer::m_vecVelocity.y = 0.f;
 			}
 		}
+	}
+	else
+	{
+		std::cout << "No World" << std::endl;
 	}
 }
 

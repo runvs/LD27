@@ -4,16 +4,16 @@ struct cPlayerProperties
 {
 	static float GetJumpVelocity()
 	{
-		return -500.0f;
+		return -300.0f;
 	}
 
 	static float GetFrictionCoefficient()
 	{
-		return 0.99f;
+		return 1.f;
 	}
 
 	static float GetFallingVelocity()
 	{
-		return 1.0f;
+		return 2.0f;
 	}
 };

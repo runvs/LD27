@@ -12,6 +12,8 @@ int main()
 	cWorld World;
 
 	sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(800, 600), "LD27!");
+	window->setFramerateLimit(100);
+	window->setVerticalSyncEnabled(true);
 
     while (window->isOpen())
     {
@@ -28,8 +30,7 @@ int main()
 
 		World.Update(t_fElapsedTimeInSeconds);
 
-
-        window->clear();
+		window->clear(sf::Color(152,245,255));
 		World.Draw(window);
 		window->display();
     }

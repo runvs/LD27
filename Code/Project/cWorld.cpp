@@ -11,12 +11,13 @@ cWorld::cWorld()
 
 
 	/// world Vars
-	m_fWorldMoveSpeed = 0.1f;
+	m_fWorldMoveSpeed = 1.5f;
 	m_vecKumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
 	LoadWorld();
 
 	/// Player
 	cWorld::m_pPlayer = new cPlayer();
+	cWorld::m_pPlayer->SetWorld(this);
 
 }
 
@@ -42,10 +43,6 @@ void cWorld::LoadWorld ()
 			cWorld::m_vecTiles.push_back(pTile);
 		}
 	}
-	
-	
-
-
 }
 
 void cWorld::GetInput (sf::Event& Event)
@@ -82,10 +79,12 @@ void cWorld::ChangeRemainingTime ( float deltaT)
 	m_fRemainingTime += deltaT;
 }
 
+
 void cWorld::MoveTiles( sf::Vector2f Delta)
 {
 	m_vecKumulativeWorldMovement -= Delta;
 	m_vecIncrementalWorldMovement -= Delta;
+
 	std::vector<cTile*>::iterator it;
 	for (	it = m_vecTiles.begin();
 			it != m_vecTiles.end();
@@ -104,7 +103,9 @@ void cWorld::MoveTiles( sf::Vector2f Delta)
 	{
 		m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
 		cTile* t_pTile = new cTile(cTile::EARTH_BELOW);
-		t_pTile->SetPosition(sf::Vector2f(m_vecIncrementalWorldMovement.x + 49 * cTile::s_iTileSizeInPixels, 600 - cTile::s_iTileSizeInPixels ));
+
+		t_pTile->SetPosition(sf::Vector2f(m_vecIncrementalWorldMovement.x + 49.f * cTile::s_iTileSizeInPixels, 600.f - cTile::s_iTileSizeInPixels ));
+
 		m_vecTiles.push_back(t_pTile);
 	}
 }
@@ -132,6 +133,6 @@ std::vector<cTile*> cWorld::GetTilesInProximity(sf::Vector2f position)
 		}
 	}
 
-	std::cout << vecReturn.size() << std::endl;
+	//std::cout << vecReturn.size() << std::endl;
 	return vecReturn;
 }
