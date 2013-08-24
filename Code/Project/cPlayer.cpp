@@ -10,6 +10,7 @@
 cPlayer::cPlayer()
 {
 	LoadPlayer();
+	LoadSounds();
 	m_vecPos = sf::Vector2f(300.f, 400.f);
 	m_vecJumpVelocityAdd = sf::Vector2f(0, cPlayerProperties::GetJumpVelocity());
 	m_pWorld = NULL;
@@ -19,6 +20,17 @@ void cPlayer::LoadPlayer()
 {
 	cPlayer::m_Texture.loadFromFile("gfx/Player.png");
 	cPlayer::m_Sprite.setTexture(cPlayer::m_Texture);
+}
+
+void cPlayer::LoadSounds()
+{
+	m_SoundBufferJump.loadFromFile("sfx/jump.wav");
+	m_SoundJump.setBuffer(m_SoundBufferJump);
+	m_SoundJump.setVolume(15.f);
+
+	m_SoundBufferPickUp.loadFromFile("sfx/pickup.wav");
+	m_SoundPickUp.setBuffer(m_SoundBufferPickUp);
+	m_SoundPickUp.setVolume(25.f);
 }
 
 
@@ -88,6 +100,7 @@ void cPlayer::Update (float deltaT)
 		{
 			m_pWorld->ChangeRemainingTime(cWorldProperties::GetPowerUpTime());
 			m_pWorld->ResetPowerUpPosition();
+			cPlayer::m_SoundPickUp.play();
 		}
 	}
 	else
@@ -140,7 +153,12 @@ void cPlayer::Move (sf::Vector2f vecDelta)
 
 void cPlayer::Jump ( void )
 {
+	cPlayer::m_SoundJump.play();
 	cPlayer::m_vecVelocity += m_vecJumpVelocityAdd;
+	if (cPlayer::m_pWorld)
+	{
+		cPlayer::m_pWorld->ChangeRemainingTime(cWorldProperties::GetJumpTimePenalty());
+	}
 }
 
 void cPlayer::Attack ( void )

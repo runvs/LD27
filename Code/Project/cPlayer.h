@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class cWorld;
 
@@ -39,4 +40,11 @@ private:
 	sf::Vector2f m_vecJumpVelocityAdd;
 
 
+	void LoadSounds ();
+
+	sf::SoundBuffer m_SoundBufferJump;
+	sf::Sound m_SoundJump;
+
+	sf::SoundBuffer m_SoundBufferPickUp;
+	sf::Sound m_SoundPickUp;
 };

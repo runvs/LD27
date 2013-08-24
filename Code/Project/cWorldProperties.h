@@ -25,6 +25,12 @@ struct cWorldProperties
 		return 0.01f;
 	}
 
+	static float GetJumpTimePenalty()
+	{
+		return 0.1f;
+	}
+
+
 	static float GetPowerUpTime()
 	{
 		return 15.f;
