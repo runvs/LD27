@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <SFML/Audio.hpp>
 
 #include <SFML/Graphics.hpp>
 #include "cTile.h"
@@ -72,8 +73,10 @@ private:
 	void ResetTimers();
 	void ResetPlayer();
 
-
 	void RepositionPowerUp();
+
+	sf::Music m_BackgroundMusicIntro;
+	sf::Music m_BackgroundMusicLoop;
 
 
 };

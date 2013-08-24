@@ -7,6 +7,11 @@
 
 cWorld::cWorld()
 {
+	// load Sound
+	cWorld::m_BackgroundMusicIntro.openFromFile("sfx/LD27_Intro.ogg");
+	cWorld::m_BackgroundMusicLoop.openFromFile("sfx/LD27_Loop.ogg");
+	cWorld::m_BackgroundMusicLoop.setLoop(true);
+
 	/// timing Vars
 	cWorld::ResetTimers();
 
@@ -33,6 +38,8 @@ cWorld::cWorld()
 	cWorld::m_fPowerUpTimerMax = cWorldProperties::GetPowerUpTimerMax();
 	cWorld::m_fPowerUpTimer = cWorldProperties::GetPowerUpTimerStart();
 	m_bPowerUpSpawned = false;
+
+	cWorld::m_BackgroundMusicIntro.play();
 
 }
 
@@ -94,6 +101,11 @@ void cWorld::Update (float deltaT)
 {
 	if (!m_bGameOver)
 	{
+		if (m_BackgroundMusicIntro.getStatus() == sf::Sound::Stopped && m_BackgroundMusicLoop.getStatus() == sf::Sound::Stopped )
+		{
+			
+			m_BackgroundMusicLoop.play();
+		}
 		cWorld::m_pPlayer->Update(deltaT);
 		cWorld::m_fTotalTime += deltaT;
 		cWorld::m_fRemainingTime -= deltaT;
