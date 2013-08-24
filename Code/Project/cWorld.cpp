@@ -283,7 +283,7 @@ void cWorld::RestartGame()
 
 void cWorld::ResetTimers()
 {
-	cWorld::m_fStartTime = 10.f;
+	cWorld::m_fStartTime = 100.f;
 	cWorld::m_fTotalTime = 0.f;
 	cWorld::m_fRemainingTime = m_fStartTime;
 }
