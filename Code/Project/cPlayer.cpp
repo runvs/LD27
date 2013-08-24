@@ -61,6 +61,12 @@ void cPlayer::Update (float deltaT)
 				cPlayer::m_vecVelocity.y = 0.f;
 			}
 		}
+
+		if( Collision::BoundingBoxTest(cPlayer::m_pWorld->GetPowerUp(), cPlayer::m_Sprite))
+		{
+			m_pWorld->ChangeRemainingTime(+0.5f);
+			m_pWorld->ResetPowerUpPosition();
+		}
 	}
 	else
 	{

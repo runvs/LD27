@@ -1,20 +1,11 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
-#include <string>
 
-class cTile
+
+class cPowerUp
 {
 public:
-	enum eTileType
-	{
-		GRASS_1, GRASS_2, EARTH_TOP, EARTH_BELOW, BLOCK
-	};
-
-	cTile(cTile::eTileType tileType);
-
-	static int s_iTileSizeInPixels;
-
+	cPowerUp();
 	void Draw (sf::RenderWindow* renderWindow);
 
 	// Setter and getter for tile position
@@ -22,12 +13,11 @@ public:
 	sf::Vector2f GetPosition();
 
 	// Getter for the tile's sprite address
-	sf::Sprite& GetSprite() { return m_Sprite; };
+	inline sf::Sprite& GetSprite() { return m_Sprite; };
 
 private:
 	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
 	sf::Vector2f m_Position;
 
-	std::string GetFileNameByTileType(cTile::eTileType tileType);
 };

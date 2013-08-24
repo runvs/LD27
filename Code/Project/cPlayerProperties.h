@@ -1,19 +1,17 @@
-#include <SFML/Graphics.hpp>
-
 struct cPlayerProperties
 {
 	static float GetJumpVelocity()
 	{
-		return -300.0f;
+		return -350.0f;
 	}
 
 	static float GetFrictionCoefficient()
 	{
-		return 0.95f;
+		return 0.98f;
 	}
 
 	static float GetFallingVelocity()
 	{
-		return 4.0f;
+		return 9.81f;
 	}
 };

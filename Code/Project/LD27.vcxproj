@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="cCollision.cpp" />
     <ClCompile Include="cPlayer.cpp" />
+    <ClCompile Include="cPowerUp.cpp" />
     <ClCompile Include="cRandom.cpp" />
     <ClCompile Include="cTile.cpp" />
     <ClCompile Include="cWorld.cpp" />
@@ -94,10 +95,12 @@
     <ClInclude Include="cCollision.h" />
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cPlayerProperties.h" />
+    <ClInclude Include="cPowerUp.h" />
     <ClInclude Include="cRandom.h" />
     <ClInclude Include="cTile.h" />
     <ClInclude Include="cUtility.h" />
     <ClInclude Include="cWorld.h" />
+    <ClInclude Include="cWorldProperties.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

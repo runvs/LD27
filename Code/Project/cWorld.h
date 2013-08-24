@@ -4,7 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "cTile.h"
-
+#include "cPowerUp.h"
 
 
 class cPlayer;
@@ -29,12 +29,22 @@ public:
 
 	std::vector<cTile*> GetTilesInProximity(sf::Vector2f position);
 
+	inline sf::Sprite& GetPowerUp(void) {return m_PowerUp.GetSprite();};
+
+	void ResetPowerUpPosition();
+
 private:
 	cPlayer* m_pPlayer;
+
+	cPowerUp m_PowerUp;
+	bool m_bPowerUpSpawned;
 
 	float m_fTotalTime;
 	float m_fRemainingTime;
 	float m_fStartTime;
+	
+	float m_fPowerUpTimer;
+	float m_fPowerUpTimerMax;
 
 	float m_fWorldMoveSpeed;
 
@@ -54,5 +64,8 @@ private:
 	float m_fTotalTimeBarLength;
 
 	void EndGame(float fScore);
+
+	void RepositionPowerUp();
+
 
 };

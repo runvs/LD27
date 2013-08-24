@@ -1,30 +1,40 @@
 #include "cUtility.h"
 #include "cWorld.h"
 #include "cPlayer.h"
+#include "cRandom.h"
+
+#include "cWorldProperties.h"
 
 cWorld::cWorld()
 {
 	/// timing Vars
-	m_fStartTime = 10.f;
-	m_fTotalTime = 0.f;
-	m_fRemainingTime = m_fStartTime;
+	cWorld::m_fStartTime = 10.f;
+	cWorld::m_fTotalTime = 0.f;
+	cWorld::m_fRemainingTime = m_fStartTime;
 
-	m_fTotalTimeBarLength = 150;
+	
+	/// Time Bar
+	cWorld::m_fTotalTimeBarLength = cWorldProperties::GetTimeBarLengthInPixels();
 
-	m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength,30));
+	cWorld::m_pTimeBar = new sf::RectangleShape(sf::Vector2f(m_fTotalTimeBarLength,30));
 
-	m_pTimeBar->setFillColor(sf::Color::Green);
-	m_pTimeBar->setPosition(10, 10);
+	cWorld::m_pTimeBar->setFillColor(sf::Color::Green);
+	cWorld::m_pTimeBar->setPosition(10, 10);
 
 
 	/// world Vars
-	m_fWorldMoveSpeed = 1.5f;
+	cWorld::m_fWorldMoveSpeed = cWorldProperties::GetWorldMoveSpeed();
 	m_vecCumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
 	LoadWorld();
 
 	/// Player
 	cWorld::m_pPlayer = new cPlayer();
 	cWorld::m_pPlayer->SetWorld(this);
+
+	/// Power Up
+	cWorld::m_fPowerUpTimerMax = cWorldProperties::GetPowerUpTimerMax();
+	cWorld::m_fPowerUpTimer = cWorldProperties::GetPowerUpTimerStart();
+	m_bPowerUpSpawned = false;
 
 }
 
@@ -63,6 +73,11 @@ void cWorld::Update (float deltaT)
 	cWorld::m_fTotalTime += deltaT;
 	cWorld::m_fRemainingTime -= deltaT;
 
+	if(m_fPowerUpTimer >= 0.f)
+	{
+		cWorld::m_fPowerUpTimer -= deltaT;
+	}
+
 	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
 	cWorld::MoveTiles(t_vecTileMovement);
 
@@ -76,10 +91,19 @@ void cWorld::Update (float deltaT)
 	{
 		t_fTimeBarLenghtFactor = 1.f;
 
-		// additional: draw time next to time bar
+		// additional: draw time more than 10 seconds next to time bar
 	}
 	m_pTimeBar->setScale(t_fTimeBarLenghtFactor, 1.f);
 
+
+	if (m_fPowerUpTimer <= 0 && !m_bPowerUpSpawned)	// powerup is spawned
+	{
+		cWorld::RepositionPowerUp();
+	}
+	if (m_bPowerUpSpawned && m_PowerUp.GetPosition().x < -20)
+	{
+		ResetPowerUpPosition();	// move it out of the way
+	}
 }
 
 void cWorld::Draw ( sf::RenderWindow* RW)
@@ -92,6 +116,7 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		(*it)->Draw(RW);
 	}
 	cWorld::m_pPlayer->Draw(RW);
+	cWorld::m_PowerUp.Draw(RW);
 
 	cWorld::DrawTime(RW);
 }
@@ -106,6 +131,9 @@ void cWorld::MoveTiles(sf::Vector2f Delta)
 {
 	m_vecCumulativeWorldMovement -= Delta;
 	m_vecIncrementalWorldMovement -= Delta;
+
+
+	m_PowerUp.SetPosition(m_PowerUp.GetPosition() + Delta);
 
 	std::vector<cTile*>::iterator it;
 	for (	it = m_vecTiles.begin();
@@ -173,7 +201,7 @@ void cWorld::AddTilesToTheEnd()
 	m_vecIncrementalWorldMovement.x -= cTile::s_iTileSizeInPixels;
 	cTile* t_pTile = new cTile(cTile::EARTH_TOP);
 	float xCoord = 49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x;
-	float yCoord = 600 - cTile::s_iTileSizeInPixels * GetTerrainHeight(0.01f * cWorld::m_vecCumulativeWorldMovement.x);
+	float yCoord = 600 - cTile::s_iTileSizeInPixels * GetTerrainHeight(cWorldProperties::GetTerrainHeightFrequency() * cWorld::m_vecCumulativeWorldMovement.x);
 
 	t_pTile->SetPosition(sf::Vector2f(xCoord, yCoord));
 
@@ -198,4 +226,21 @@ void cWorld::DrawTime (sf::RenderWindow* RW)
 void cWorld::EndGame(float fScore)
 {
 
+}
+
+void cWorld::ResetPowerUpPosition()
+{
+	m_PowerUp.SetPosition(sf::Vector2f(-200.f, 0.f));
+	m_fPowerUpTimer = m_fPowerUpTimerMax;
+	m_bPowerUpSpawned = false;
+}
+
+void cWorld::RepositionPowerUp()
+{
+	float t_fPosX = 49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x;
+	float t_fPosY = cRandom::GetRandomFloat(100.f,500.f);
+	std::cout << t_fPosX << "\t" << t_fPosY << std::endl;
+	cWorld::m_PowerUp.SetPosition(sf::Vector2f( t_fPosX , t_fPosY));
+	m_bPowerUpSpawned = true;
+	
 }

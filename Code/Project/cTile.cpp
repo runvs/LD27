@@ -26,16 +26,6 @@ sf::Vector2f cTile::GetPosition()
 	return cTile::m_Position;
 }
 
-// Setter and getter for tile index
-void cTile::SetIndex(sf::Vector2i index)
-{
-	cTile::m_Index = index;
-}
-
-sf::Vector2i cTile::GetIndex()
-{
-	return cTile::m_Index;
-}
 
 std::string cTile::GetFileNameByTileType(cTile::eTileType tileType)
 {
