@@ -107,7 +107,4 @@ private:
 	sf::SoundBuffer m_SoundBufferMultiplier;
 	sf::Sound m_SoundMultiplier;
 	float m_fMusicalPitch;
-
-	sf::Shader m_ShaderBackgroundBlur;
-
 };

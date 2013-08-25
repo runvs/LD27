@@ -24,10 +24,6 @@ cWorld::cWorld()
 	cWorld::m_SoundBufferMultiplier.loadFromFile("sfx/multiply.wav");
 	cWorld::m_SoundMultiplier.setBuffer(cWorld::m_SoundBufferMultiplier);
 
-	/// Shader stuff
-	cWorld::m_ShaderBackgroundBlur.loadFromFile("gfx/blur.frag", sf::Shader::Fragment);
-	cWorld::m_ShaderBackgroundBlur.setParameter("blur_radius", 8.f);
-	cWorld::m_ShaderBackgroundBlur.setParameter("texture", sf::Shader::CurrentTexture);
 
 	/// timing Vars
 	cWorld::ResetTimers();
@@ -130,8 +126,7 @@ void cWorld::CreateWorld ()
 		float t_fHeight = (Perlin.CreateNoise(cWorldProperties::GetBackgroundShapeWidth()*i) + 1.f ) * 100.f+ 350.f;
 		sf::RectangleShape t_shapeBackground(sf::Vector2f(cWorldProperties::GetBackgroundShapeWidth(), t_fHeight ));
 		t_shapeBackground.setPosition(cWorldProperties::GetBackgroundShapeWidth()*i, 600.f- t_fHeight);
-		t_shapeBackground.setFillColor(sf::Color(200, 200, 200, 105));
-		//t_shapeBackground.setFillColor(sf::Color(142, 225, 235, 105));
+		t_shapeBackground.setFillColor(sf::Color(140, 140, 140, 105));
 		m_vecBackgroundShapes.push_back(t_shapeBackground);
 	}
 }
@@ -266,16 +261,12 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 	{
 		RW->draw(cWorld::m_BackgroundSprite);
 
-		sf::RenderStates states;
-		//states.shader = &(cWorld::m_ShaderBackgroundBlur);
-		//states.blendMode = sf::BlendAlpha;
-
 		std::vector<sf::RectangleShape>::iterator itShapes;
 		for (	itShapes = m_vecBackgroundShapes.begin();
 				itShapes != m_vecBackgroundShapes.end();
 				++itShapes)
 		{
-			RW->draw((*itShapes), states);
+			RW->draw((*itShapes));
 		}
 
 		// Render tiles
