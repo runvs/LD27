@@ -615,8 +615,6 @@ void cWorld::AddTilesToTheEnd()
 		cWorld::m_vecTiles.push_back(t_pTile);
 	}
 
-	std::cout << yCoord;
-
 	// Now (maybe) add some random blocks
 	if(cRandom::GetRandomInt(1, 5) == 1)
 	{
@@ -631,11 +629,7 @@ void cWorld::AddTilesToTheEnd()
 
 		t_pTile->SetPosition(sf::Vector2f(xCoord, blockYCoord));
 		cWorld::m_vecTiles.push_back(t_pTile);
-
-		std::cout << ", " << blockYCoord;
 	}
-
-	std::cout << std::endl;
 }
 
 void cWorld::DrawTime (sf::RenderWindow* RW)
