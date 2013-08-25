@@ -49,11 +49,18 @@ private:
 	float m_fTotalTime;
 	float m_fRemainingTime;
 	float m_fStartTime;
+
+	float m_fRemainingTimeLastFrame;
 	
 	float m_fPowerUpTimer;
 	float m_fPowerUpTimerMax;
 
 	float m_fWorldMoveSpeed;
+
+	void TriggerLastManStandingEffect();
+	sf::Shape* m_ShapeAlarm;
+	bool m_bAlarmRunning;
+
 
 	void MoveTheWorld(float deltaT);
 	cPerlinNoise* m_PerlinNoise;
@@ -103,6 +110,9 @@ private:
 	float m_fHighscoreMultiplier;
 	float m_fHighscoreMultiplierTimer;
 	void IncreaseHighScoreMultiplier();
+	sf::Shape* m_ShapeMulitply;
+	bool m_bMultiplyEffectRunning;
+	void TriggerMultiplyEffect();
 
 	sf::SoundBuffer m_SoundBufferMultiplier;
 	sf::Sound m_SoundMultiplier;

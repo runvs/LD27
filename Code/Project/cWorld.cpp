@@ -11,6 +11,9 @@ cWorld::cWorld()
 {
 	cWorld::m_PerlinNoise = new cPerlinNoise(2, 3.f);
 
+	cWorld::m_bAlarmRunning = false;
+	cWorld::m_bMultiplyEffectRunning = false;
+
 	// Create background gradient
 	CreateColorGradient();
 	cWorld::m_BackgroundTexture.loadFromImage(cWorld::m_BackgroundGradient);
@@ -23,6 +26,7 @@ cWorld::cWorld()
 
 	cWorld::m_SoundBufferMultiplier.loadFromFile("sfx/multiply.wav");
 	cWorld::m_SoundMultiplier.setBuffer(cWorld::m_SoundBufferMultiplier);
+	cWorld::m_SoundMultiplier.setVolume(15.f);
 
 
 	/// timing Vars
@@ -35,6 +39,21 @@ cWorld::cWorld()
 	cWorld::m_pTimeBar->setFillColor(sf::Color::Green);
 	cWorld::m_pTimeBar->setPosition(10, 10);
 
+	// Shape Alarm
+	m_ShapeAlarm = new sf::RectangleShape(sf::Vector2f(cWorldProperties::GetTimeBarLengthInPixels(),30));
+	m_ShapeAlarm->setFillColor(sf::Color::Transparent);
+	m_ShapeAlarm->setOutlineThickness(3);
+	m_ShapeAlarm->setOutlineColor(sf::Color::Transparent);
+	m_ShapeAlarm->setPosition(10, 10);
+
+	// Shape Mulitply
+	m_ShapeMulitply = new sf::CircleShape(10.f, 50);
+	m_ShapeMulitply->setFillColor(sf::Color::Transparent);
+	m_ShapeMulitply->setOutlineThickness(3);
+	m_ShapeMulitply->setOutlineColor(sf::Color::Transparent);
+	m_ShapeMulitply->setPosition(585.f, 5.f);
+	m_ShapeMulitply->setOrigin(10.f, 10.f);
+	
 
 	/// world Vars
 	cWorld::m_fWorldMoveSpeed = cWorldProperties::GetWorldMoveSpeed();
@@ -67,6 +86,7 @@ cWorld::~cWorld()
 	delete cWorld::m_pPlayer;
 	delete cWorld::m_pTimeBar;
 	delete cWorld::m_PerlinNoise;
+	delete cWorld::m_ShapeAlarm;
 	m_vecBackgroundShapes.clear();
 }
 
@@ -173,6 +193,12 @@ void cWorld::Update (float deltaT)
 		cWorld::m_fTotalTime += deltaT * cWorld::m_fHighscoreMultiplier;
 		cWorld::m_fRemainingTime -= deltaT;
 		cWorld::m_fHighscoreMultiplierTimer += deltaT;
+
+		if ( m_fRemainingTimeLastFrame >= cWorldProperties::GetAlarmTriggerTime() && m_fRemainingTime < cWorldProperties::GetAlarmTriggerTime())
+		{
+			cWorld::TriggerLastManStandingEffect();
+		}
+
 		
 		if (cWorld::m_fHighscoreMultiplierTimer >= cWorldProperties::GetHighScoreMultiplierTimerMax())
 		{
@@ -194,10 +220,22 @@ void cWorld::Update (float deltaT)
 		}
 
 
+		if (m_bAlarmRunning)
+		{
+			//std::cout << cWorld::m_ShapeAlarm->getScale().x  << std::endl;
+			cWorld::m_ShapeAlarm->scale(cWorld::m_ShapeAlarm->getScale().x + 0.002f, cWorld::m_ShapeAlarm->getScale().y + 0.002f);
+		}
+		if (m_bMultiplyEffectRunning)
+		{
+			cWorld::m_ShapeMulitply->scale(cWorld::m_ShapeMulitply->getScale().x + 0.0001f, cWorld::m_ShapeMulitply->getScale().y + 0.0001f);
+		}
+
+
 		cWorld::MoveTheWorld(deltaT);
 		
 		cWorld::UpdateTimeBar();
 		
+		m_fRemainingTimeLastFrame = cWorld::m_fRemainingTime;
 	}
 }
 
@@ -208,6 +246,7 @@ void cWorld::IncreaseHighScoreMultiplier()
 	cWorld::m_SoundMultiplier.play();
 	m_fMusicalPitch +=  cWorldProperties::GetHighScoreMultiplyOffset() * 0.1f;
 	cWorld::m_BackgroundMusicLoop.setPitch(m_fMusicalPitch);
+	cWorld::TriggerMultiplyEffect();
 }
 
 void cWorld::CreateColorGradient()
@@ -282,8 +321,14 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		cWorld::m_pPlayer->Draw(RW);
 		cWorld::m_PowerUp.Draw(RW);
 
+
+
+
 		// Render time bar
 		cWorld::DrawTime(RW);
+		
+		RW->draw(*m_ShapeAlarm);
+		RW->draw(*m_ShapeMulitply);
 
 		// create and Draw the fonts
 
@@ -316,7 +361,7 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 100.f));
 		RW->draw(t_sftextGoodJob);
 
-		t_sftextGoodJob.setString("You Scored");
+		t_sftextGoodJob.setString("You scored");
 		t_sftextGoodJob.setScale(0.75f, 0.75f);
 		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 250.f));
 		RW->draw(t_sftextGoodJob);
@@ -460,6 +505,7 @@ void cWorld::ResetTimers()
 	cWorld::m_fStartTime = 10.f;
 	cWorld::m_fTotalTime = 0.f;
 	cWorld::m_fRemainingTime = m_fStartTime;
+	cWorld::m_fRemainingTimeLastFrame = m_fRemainingTime;
 	m_fHighscoreMultiplierTimer = 0.f;
 }
 
@@ -485,4 +531,18 @@ void cWorld::RepositionPowerUp()
 	cWorld::m_PowerUp.SetPosition(sf::Vector2f( t_fPosX , t_fPosY));
 	m_bPowerUpSpawned = true;
 	
+}
+
+void cWorld::TriggerLastManStandingEffect()
+{
+	m_ShapeAlarm->setOutlineColor(sf::Color::Red);
+	m_ShapeAlarm->setScale(1.0f, 1.0f);
+	cWorld::m_bAlarmRunning = true;
+}
+
+void cWorld::TriggerMultiplyEffect()
+{
+	m_ShapeMulitply->setOutlineColor(sf::Color(100,250, 100));
+	m_ShapeMulitply->setScale(1.0f, 1.0f);
+	cWorld::m_bMultiplyEffectRunning = true;
 }

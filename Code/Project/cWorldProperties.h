@@ -30,6 +30,10 @@ struct cWorldProperties
 		return 0.1f;
 	}
 
+	static float GetAlarmTriggerTime()
+	{
+		return 2.0f;
+	}
 
 	static float GetPowerUpTime()
 	{
