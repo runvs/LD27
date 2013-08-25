@@ -16,11 +16,18 @@ cWorld::cWorld()
 	cWorld::m_BackgroundTexture.loadFromImage(cWorld::m_BackgroundGradient);
 	cWorld::m_BackgroundSprite.setTexture(cWorld::m_BackgroundTexture);
 
-	// load Sound
+	// load Sounds
 	cWorld::m_BackgroundMusicIntro.openFromFile("sfx/LD27_Intro.ogg");
 	cWorld::m_BackgroundMusicLoop.openFromFile("sfx/LD27_Loop.ogg");
 	cWorld::m_BackgroundMusicLoop.setLoop(true);
 
+	cWorld::m_SoundBufferMultiplier.loadFromFile("sfx/multiply.wav");
+	cWorld::m_SoundMultiplier.setBuffer(cWorld::m_SoundBufferMultiplier);
+
+	/// Shader stuff
+	cWorld::m_ShaderBackgroundBlur.loadFromFile("gfx/blur.frag", sf::Shader::Fragment);
+	cWorld::m_ShaderBackgroundBlur.setParameter("blur_radius", 8.f);
+	cWorld::m_ShaderBackgroundBlur.setParameter("texture", sf::Shader::CurrentTexture);
 
 	/// timing Vars
 	cWorld::ResetTimers();
@@ -36,7 +43,7 @@ cWorld::cWorld()
 	/// world Vars
 	cWorld::m_fWorldMoveSpeed = cWorldProperties::GetWorldMoveSpeed();
 	m_vecCumulativeWorldMovement = sf::Vector2f(0.f, 0.f);
-	LoadWorld();
+	CreateWorld();
 	m_bGameOver = false;
 	m_bClose = false;
 
@@ -83,7 +90,7 @@ void cWorld::DeleteTiles()
 
 }
 
-void cWorld::LoadWorld ()
+void cWorld::CreateWorld ()
 {
 	// Create a randomly generated World
 	DeleteTiles();
@@ -120,10 +127,11 @@ void cWorld::LoadWorld ()
 	for (int i = 0; i <= 45; ++i)
 	{
 		
-		float t_fHeight = (Perlin.CreateNoise(cWorldProperties::BackgroundShapeWidth()*i) + 1.f ) * 100.f+ 350.f;
-		sf::RectangleShape t_shapeBackground(sf::Vector2f(cWorldProperties::BackgroundShapeWidth(), t_fHeight ));
-		t_shapeBackground.setPosition(cWorldProperties::BackgroundShapeWidth()*i, 600.f- t_fHeight);
-		t_shapeBackground.setFillColor(sf::Color(142, 225, 235, 105));
+		float t_fHeight = (Perlin.CreateNoise(cWorldProperties::GetBackgroundShapeWidth()*i) + 1.f ) * 100.f+ 350.f;
+		sf::RectangleShape t_shapeBackground(sf::Vector2f(cWorldProperties::GetBackgroundShapeWidth(), t_fHeight ));
+		t_shapeBackground.setPosition(cWorldProperties::GetBackgroundShapeWidth()*i, 600.f- t_fHeight);
+		t_shapeBackground.setFillColor(sf::Color(200, 200, 200, 105));
+		//t_shapeBackground.setFillColor(sf::Color(142, 225, 235, 105));
 		m_vecBackgroundShapes.push_back(t_shapeBackground);
 	}
 }
@@ -165,9 +173,17 @@ void cWorld::Update (float deltaT)
 		{
 			m_BackgroundMusicLoop.play();
 		}
+
 		cWorld::m_pPlayer->Update(deltaT);
-		cWorld::m_fTotalTime += deltaT;
+		cWorld::m_fTotalTime += deltaT * cWorld::m_fHighscoreMultiplier;
 		cWorld::m_fRemainingTime -= deltaT;
+		cWorld::m_fHighscoreMultiplierTimer += deltaT;
+		
+		if (cWorld::m_fHighscoreMultiplierTimer >= cWorldProperties::GetHighScoreMultiplierTimerMax())
+		{
+			IncreaseHighScoreMultiplier();
+		}
+
 
 		if(m_fPowerUpTimer >= 0.f)
 		{
@@ -182,14 +198,21 @@ void cWorld::Update (float deltaT)
 			ResetPowerUpPosition();	// move it out of the way
 		}
 
+
 		cWorld::MoveTheWorld(deltaT);
 		
 		cWorld::UpdateTimeBar();
 		
-
-
-		
 	}
+}
+
+void cWorld::IncreaseHighScoreMultiplier()
+{
+	cWorld::m_fHighscoreMultiplier += cWorldProperties::GetHighScoreMultiplyOffset();
+	cWorld::m_fHighscoreMultiplierTimer = 0.0f;
+	cWorld::m_SoundMultiplier.play();
+	m_fMusicalPitch +=  cWorldProperties::GetHighScoreMultiplyOffset() * 0.1f;
+	cWorld::m_BackgroundMusicLoop.setPitch(m_fMusicalPitch);
 }
 
 void cWorld::CreateColorGradient()
@@ -214,7 +237,7 @@ void cWorld::CreateColorGradient()
 
 void cWorld::MoveTheWorld(float deltaT)
 {
-	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed;
+	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed * cWorld::m_fHighscoreMultiplier;
 	cWorld::MoveTiles(t_vecTileMovement);
 	cWorld::MoveBackground(t_vecTileMovement);
 }
@@ -243,12 +266,16 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 	{
 		RW->draw(cWorld::m_BackgroundSprite);
 
+		sf::RenderStates states;
+		//states.shader = &(cWorld::m_ShaderBackgroundBlur);
+		//states.blendMode = sf::BlendAlpha;
+
 		std::vector<sf::RectangleShape>::iterator itShapes;
 		for (	itShapes = m_vecBackgroundShapes.begin();
 				itShapes != m_vecBackgroundShapes.end();
 				++itShapes)
 		{
-			RW->draw((*itShapes));
+			RW->draw((*itShapes), states);
 		}
 
 		// Render tiles
@@ -268,9 +295,16 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		cWorld::DrawTime(RW);
 
 		// create and Draw the fonts
+
+		/// Total Time
 		sf::Text t_sftextTotalTime("", font);
 		t_sftextTotalTime.setString("Total " + tostr(cWorld::m_fTotalTime));
 		t_sftextTotalTime.setPosition(sf::Vector2f(640.f, 5.f));
+		RW->draw(t_sftextTotalTime);
+
+		/// Time Multiplier
+		t_sftextTotalTime.setString("x" + tostr(cWorld::m_fHighscoreMultiplier));
+		t_sftextTotalTime.setPosition(sf::Vector2f(585.f, 5.f));
 		RW->draw(t_sftextTotalTime);
 
 		/// Additional Time
@@ -424,7 +458,7 @@ void cWorld::EndGame()
 
 void cWorld::RestartGame()
 {
-	LoadWorld();
+	CreateWorld();
 	m_bGameOver = false;
 	ResetTimers();
 	ResetPlayer();
@@ -435,11 +469,14 @@ void cWorld::ResetTimers()
 	cWorld::m_fStartTime = 10.f;
 	cWorld::m_fTotalTime = 0.f;
 	cWorld::m_fRemainingTime = m_fStartTime;
+	m_fHighscoreMultiplierTimer = 0.f;
 }
 
 void cWorld::ResetPlayer()
 {
 	cWorld::m_pPlayer->SetPosition(sf::Vector2f(300.f, 30.f));
+	cWorld::m_fHighscoreMultiplier = 1.0f;
+	cWorld::m_fMusicalPitch = 1.0f;
 }
 
 void cWorld::ResetPowerUpPosition()
@@ -452,7 +489,7 @@ void cWorld::ResetPowerUpPosition()
 void cWorld::RepositionPowerUp()
 {
 	float t_fPosX = 49.f * cTile::s_iTileSizeInPixels - m_vecIncrementalWorldMovement.x;
-	float t_fPosYMax = 600.f - cTile::s_iTileSizeInPixels* cWorld::GetTerrainHeight(cWorldProperties::GetTerrainHeightFrequency() * t_fPosX);
+	float t_fPosYMax = 600.f - (cTile::s_iTileSizeInPixels* cWorld::GetTerrainHeight(cWorldProperties::GetTerrainHeightFrequency() * t_fPosX) + 50.f);
 	float t_fPosY = cRandom::GetRandomFloat(10, t_fPosYMax);
 	cWorld::m_PowerUp.SetPosition(sf::Vector2f( t_fPosX , t_fPosY));
 	m_bPowerUpSpawned = true;

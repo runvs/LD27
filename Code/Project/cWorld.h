@@ -20,7 +20,7 @@ public:
 	cWorld();
 	~cWorld();
 
-	void LoadWorld ();
+	void CreateWorld ();
 
 	void GetInput (sf::Event& Event);
 
@@ -100,5 +100,14 @@ private:
 
 	sf::Font font;
 
+	float m_fHighscoreMultiplier;
+	float m_fHighscoreMultiplierTimer;
+	void IncreaseHighScoreMultiplier();
+
+	sf::SoundBuffer m_SoundBufferMultiplier;
+	sf::Sound m_SoundMultiplier;
+	float m_fMusicalPitch;
+
+	sf::Shader m_ShaderBackgroundBlur;
 
 };

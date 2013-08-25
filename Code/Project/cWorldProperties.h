@@ -2,12 +2,12 @@ struct cWorldProperties
 {
 	static float GetPowerUpTimerMax()
 	{
-		return 4.5f;
+		return 4.0f;
 	}
 
 	static float GetPowerUpTimerStart()
 	{
-		return 1.5f;
+		return 0.5f;
 	}
 
 	static int GetTimeBarLengthInPixels()
@@ -17,7 +17,7 @@ struct cWorldProperties
 
 	static float GetWorldMoveSpeed()
 	{
-		return 1.5f;
+		return 1.9f;
 	}
 
 	static float GetTerrainHeightFrequency()
@@ -33,11 +33,20 @@ struct cWorldProperties
 
 	static float GetPowerUpTime()
 	{
-		return 15.f;
+		return 10.f;
 	}
 
-	static float BackgroundShapeWidth()
+	static float GetBackgroundShapeWidth()
 	{
 		return 75.f;
+	}
+
+	static float GetHighScoreMultiplyOffset ()
+	{
+		return 0.15f;
+	}
+	static float GetHighScoreMultiplierTimerMax()
+	{
+		return 15.0f;
 	}
 };

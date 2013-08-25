@@ -31,6 +31,7 @@ int main()
 		World.Update(t_fElapsedTimeInSeconds);
 
 		window->clear();
+		
 
 		World.Draw(window);
 		window->display();

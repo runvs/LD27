@@ -104,6 +104,7 @@ void cPlayer::Update (float deltaT)
 			}
 		}
 
+		// Power Up 
 		if( Collision::BoundingBoxTest(cPlayer::m_pWorld->GetPowerUp(), cPlayer::m_Sprite))
 		{
 			m_pWorld->ChangeRemainingTime(cWorldProperties::GetPowerUpTime());
@@ -165,7 +166,7 @@ void cPlayer::Jump ( void )
 	cPlayer::m_vecVelocity += m_vecJumpVelocityAdd;
 	if (cPlayer::m_pWorld)
 	{
-		cPlayer::m_pWorld->ChangeRemainingTime(cWorldProperties::GetJumpTimePenalty());
+		cPlayer::m_pWorld->ChangeRemainingTime(-cWorldProperties::GetJumpTimePenalty());
 	}
 }
 
