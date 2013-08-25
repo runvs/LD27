@@ -61,6 +61,7 @@ cWorld::cWorld()
 	CreateWorld();
 	m_bGameOver = false;
 	m_bClose = false;
+	m_bCredits = false;
 
 
 	/// Player
@@ -103,6 +104,7 @@ void cWorld::DeleteTiles()
 			break;
 	}
 	cWorld::m_vecTiles.clear();
+	m_vecBackgroundShapes.clear();
 
 }
 
@@ -171,6 +173,10 @@ void cWorld::GetInput (sf::Event& Event)
 			if(Event.key.code == sf::Keyboard::Escape)
 			{
 				cWorld::m_bClose = true;
+			}
+			else if (Event.key.code == sf::Keyboard::C)
+			{
+				m_bCredits = !m_bCredits;
 			}
 			else if (Event.key.code != sf::Keyboard::Space)
 			{
@@ -352,30 +358,128 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 			RW->draw(t_sftextAdditionalTime);
 		}
 	}
-	else
+	else	// Game Over
 	{
-		RW->clear();
+		if (!m_bCredits)
+		{
+			RW->clear();
 
-		sf::Text t_sftextGoodJob("Game Over", font);
-		t_sftextGoodJob.setScale(1.5f, 1.5f);
-		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 100.f));
-		RW->draw(t_sftextGoodJob);
+			sf::Text t_sftextGoodJob("Game Over", font);
+			t_sftextGoodJob.setScale(1.5f, 1.5f);
+			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 100.f));
+			RW->draw(t_sftextGoodJob);
 
-		t_sftextGoodJob.setString("You scored");
-		t_sftextGoodJob.setScale(0.75f, 0.75f);
-		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 250.f));
-		RW->draw(t_sftextGoodJob);
+			t_sftextGoodJob.setString("You scored");
+			t_sftextGoodJob.setScale(0.75f, 0.75f);
+			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 250.f));
+			RW->draw(t_sftextGoodJob);
 
 
-		t_sftextGoodJob.setString(tostr(cWorld::m_fTotalTime));
-		t_sftextGoodJob.setScale(1.5f, 1.5f);
-		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 290.f));
-		RW->draw(t_sftextGoodJob);
+			t_sftextGoodJob.setString(tostr(cWorld::m_fTotalTime));
+			t_sftextGoodJob.setScale(1.5f, 1.5f);
+			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 290.f));
+			RW->draw(t_sftextGoodJob);
 		
-		t_sftextGoodJob.setString("Seconds");
-		t_sftextGoodJob.setScale(0.75f, 0.75f);
-		t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 340.f));
-		RW->draw(t_sftextGoodJob);
+			t_sftextGoodJob.setString("Seconds");
+			t_sftextGoodJob.setScale(0.75f, 0.75f);
+			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 340.f));
+			RW->draw(t_sftextGoodJob);
+
+			t_sftextGoodJob.setString("[C]redits");
+			t_sftextGoodJob.setScale(0.75f, 0.75f);
+			t_sftextGoodJob.setPosition(10.f, 550.f);
+			RW->draw(t_sftextGoodJob);
+		}
+		else
+		{
+			sf::Text t_sftextCredis(cWorldProperties::GetGameName(), font);
+			t_sftextCredis.setScale(2.0f, 2.0f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 50.f));
+			RW->draw(t_sftextCredis);
+
+
+
+			t_sftextCredis.setString("created by");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 120.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Julian Dinges");
+			t_sftextCredis.setScale(1.5f, 1.5f);
+			t_sftextCredis.setPosition(sf::Vector2f(200.f- t_sftextCredis.getGlobalBounds().width/2, 150.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Programming");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(200.f- t_sftextCredis.getGlobalBounds().width/2, 200.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Graphics");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(200.f- t_sftextCredis.getGlobalBounds().width/2, 220.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Pizza & Video");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(200.f- t_sftextCredis.getGlobalBounds().width/2, 240.f));
+			RW->draw(t_sftextCredis);
+
+
+
+
+			t_sftextCredis.setString("Simon Weis");
+			t_sftextCredis.setScale(1.5f, 1.5f);
+			t_sftextCredis.setPosition(sf::Vector2f(600.f- t_sftextCredis.getGlobalBounds().width/2, 150.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Programming");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(600.f- t_sftextCredis.getGlobalBounds().width/2, 200.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Sound");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(600.f- t_sftextCredis.getGlobalBounds().width/2, 220.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Blackboard & Gummibears");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(600.f- t_sftextCredis.getGlobalBounds().width/2, 240.f));
+			RW->draw(t_sftextCredis);
+
+
+
+			t_sftextCredis.setString("using");
+			t_sftextCredis.setScale(1.5f, 1.5f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 290.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Visual Studio 2010 \t Cubase 5 & sfxr \t aseprite");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 340.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("SFML 2.1");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 360.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Thanks to");
+			t_sftextCredis.setScale(1.5f, 1.5f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 400.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("Families & Friens for their great Support");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 450.f));
+			RW->draw(t_sftextCredis);
+
+			t_sftextCredis.setString("LD for this great Opportunity. Keep it up!");
+			t_sftextCredis.setScale(0.75f, 0.75f);
+			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 470.f));
+			RW->draw(t_sftextCredis);
+
+		}
 	}
 }
 
@@ -490,11 +594,14 @@ void cWorld::DrawTime (sf::RenderWindow* RW)
 void cWorld::EndGame()
 {
 	m_bGameOver = true;
+	m_BackgroundMusicIntro.stop();
+	m_BackgroundMusicLoop.stop();
 }
 
 void cWorld::RestartGame()
 {
 	CreateWorld();
+	
 	m_bGameOver = false;
 	ResetTimers();
 	ResetPlayer();

@@ -92,6 +92,7 @@ private:
 	float m_fTotalTimeBarLength;
 
 	bool m_bGameOver;
+	bool m_bCredits;
 	bool m_bClose;
 	void RestartGame();
 	void ResetTimers();

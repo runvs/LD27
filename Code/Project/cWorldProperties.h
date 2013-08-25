@@ -37,7 +37,7 @@ struct cWorldProperties
 
 	static float GetPowerUpTime()
 	{
-		return 10.f;
+		return 11.f;
 	}
 
 	static float GetBackgroundShapeWidth()
@@ -52,5 +52,10 @@ struct cWorldProperties
 	static float GetHighScoreMultiplierTimerMax()
 	{
 		return 15.0f;
+	}
+
+	static std::string GetGameName ( )
+	{
+		return "Stahlholz";
 	}
 };
