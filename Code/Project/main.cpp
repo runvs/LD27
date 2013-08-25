@@ -8,6 +8,8 @@
 
 int main()
 {
+	srand(time(NULL));
+
 	sf::Clock MyClock;
 	cWorld World;
 
