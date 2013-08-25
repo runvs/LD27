@@ -102,6 +102,8 @@ private:
 
 	void DeleteTiles();
 
+	float m_fInfoDisplayTimer;
+
 
 	sf::Music m_BackgroundMusicIntro;
 	sf::Music m_BackgroundMusicLoop;

@@ -58,4 +58,9 @@ struct cWorldProperties
 	{
 		return "Stahlholz";
 	}
+
+	static float GetInfoDisplayTimeMax()
+	{
+		return 5.f;
+	}
 };

@@ -31,6 +31,7 @@ cWorld::cWorld()
 
 	/// timing Vars
 	cWorld::ResetTimers();
+	m_fInfoDisplayTimer = 0.f;
 
 	
 	/// Time Bar
@@ -199,11 +200,13 @@ void cWorld::Update (float deltaT)
 		cWorld::m_fTotalTime += deltaT * cWorld::m_fHighscoreMultiplier;
 		cWorld::m_fRemainingTime -= deltaT;
 		cWorld::m_fHighscoreMultiplierTimer += deltaT;
+		cWorld::m_fInfoDisplayTimer += deltaT;
 
 		if ( m_fRemainingTimeLastFrame >= cWorldProperties::GetAlarmTriggerTime() && m_fRemainingTime < cWorldProperties::GetAlarmTriggerTime())
 		{
 			cWorld::TriggerLastManStandingEffect();
 		}
+
 
 		
 		if (cWorld::m_fHighscoreMultiplierTimer >= cWorldProperties::GetHighScoreMultiplierTimerMax())
@@ -349,6 +352,26 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 		t_sftextTotalTime.setPosition(sf::Vector2f(585.f, 5.f));
 		RW->draw(t_sftextTotalTime);
 
+		if (m_fInfoDisplayTimer <= cWorldProperties::GetInfoDisplayTimeMax())
+		{
+			t_sftextTotalTime.setString("[Space] to Jump (costs time)");
+			t_sftextTotalTime.setScale(1.25f, 1.25f);
+			t_sftextTotalTime.setPosition(400.f - t_sftextTotalTime.getGlobalBounds().width/2 , 230.f - t_sftextTotalTime.getGlobalBounds().height/2);
+			RW->draw(t_sftextTotalTime);
+
+			t_sftextTotalTime.setString("[ESC] to Quit");
+			t_sftextTotalTime.setScale(1.25f, 1.25f);
+			t_sftextTotalTime.setPosition(400.f - t_sftextTotalTime.getGlobalBounds().width/2 , 280.f - t_sftextTotalTime.getGlobalBounds().height/2);
+			RW->draw(t_sftextTotalTime);
+
+
+			t_sftextTotalTime.setString("Get all The Power Ups!");
+			t_sftextTotalTime.setScale(1.25f, 1.25f);
+			t_sftextTotalTime.setPosition(400.f - t_sftextTotalTime.getGlobalBounds().width/2 , 310.f - t_sftextTotalTime.getGlobalBounds().height/2);
+			RW->draw(t_sftextTotalTime);
+		}
+
+
 		/// Additional Time
 		if (cWorld::m_fRemainingTime > 10.f)
 		{
@@ -384,6 +407,13 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 			t_sftextGoodJob.setScale(0.75f, 0.75f);
 			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 340.f));
 			RW->draw(t_sftextGoodJob);
+
+
+			t_sftextGoodJob.setString("Replay => [Enter]");
+			t_sftextGoodJob.setScale(1.5f, 1.5f);
+			t_sftextGoodJob.setPosition(sf::Vector2f(400.f- t_sftextGoodJob.getGlobalBounds().width/2, 400.f));
+			RW->draw(t_sftextGoodJob);
+
 
 			t_sftextGoodJob.setString("[C]redits");
 			t_sftextGoodJob.setScale(0.75f, 0.75f);
