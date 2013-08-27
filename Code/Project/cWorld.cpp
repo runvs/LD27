@@ -197,6 +197,10 @@ void cWorld::Update (float deltaT)
 		}
 
 		cWorld::m_pPlayer->Update(deltaT);
+		cWorld::MoveTheWorld(deltaT);
+
+		
+
 		cWorld::m_fTotalTime += deltaT * cWorld::m_fHighscoreMultiplier;
 		cWorld::m_fRemainingTime -= deltaT;
 		cWorld::m_fHighscoreMultiplierTimer += deltaT;
@@ -240,7 +244,7 @@ void cWorld::Update (float deltaT)
 		}
 
 
-		cWorld::MoveTheWorld(deltaT);
+		
 		
 		cWorld::UpdateTimeBar();
 		
@@ -283,6 +287,11 @@ void cWorld::MoveTheWorld(float deltaT)
 	sf::Vector2f t_vecTileMovement = sf::Vector2f(-1.f,0.f) * cWorld::m_fWorldMoveSpeed * cWorld::m_fHighscoreMultiplier;
 	cWorld::MoveTiles(t_vecTileMovement);
 	cWorld::MoveBackground(t_vecTileMovement);
+
+		if (cWorld::m_pPlayer->DoesCollide())
+		{
+			m_pPlayer->Move(t_vecTileMovement);
+		}
 }
 
 void cWorld::UpdateTimeBar()
@@ -499,7 +508,7 @@ void cWorld::Draw ( sf::RenderWindow* RW)
 			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 400.f));
 			RW->draw(t_sftextCredis);
 
-			t_sftextCredis.setString("Families & Friens for their great Support");
+			t_sftextCredis.setString("Families & Friends for their great Support");
 			t_sftextCredis.setScale(0.75f, 0.75f);
 			t_sftextCredis.setPosition(sf::Vector2f(400.f- t_sftextCredis.getGlobalBounds().width/2, 450.f));
 			RW->draw(t_sftextCredis);

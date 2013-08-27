@@ -49,6 +49,28 @@ void cPlayer::GetInput (sf::Event& Event)
 	}
 }
 
+
+bool cPlayer::DoesCollide ( void )
+{
+	if(cPlayer::m_pWorld != NULL)
+	{
+		std::vector<cTile*> tilesInProximity = cPlayer::m_pWorld->GetTilesInProximity(cPlayer::m_vecPos);
+
+		std::vector<cTile*>::iterator it;
+		for(it = tilesInProximity.begin();
+			it != tilesInProximity.end();
+			++it)
+		{
+			// is there collission?
+			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 void cPlayer::Update (float deltaT)
 {
 	sf::Vector2f t_vecPositionChange = cPlayer::m_vecVelocity * deltaT;
@@ -99,7 +121,7 @@ void cPlayer::Update (float deltaT)
 					t_vecPositionChange.x = cTile::s_iTileSizeInPixels + delta.x;
 				}
 
-				cPlayer::Move(-t_vecPositionChange/2.f);
+				cPlayer::Move(-t_vecPositionChange/2.0f);
 				cPlayer::m_vecVelocity.y *= 0.1f;
 			}
 		}

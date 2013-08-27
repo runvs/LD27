@@ -2,12 +2,12 @@ struct cWorldProperties
 {
 	static float GetPowerUpTimerMax()
 	{
-		return 4.0f;
+		return 3.0f;
 	}
 
 	static float GetPowerUpTimerStart()
 	{
-		return 0.5f;
+		return 0.0f;
 	}
 
 	static int GetTimeBarLengthInPixels()
@@ -37,7 +37,7 @@ struct cWorldProperties
 
 	static float GetPowerUpTime()
 	{
-		return 11.f;
+		return 11.5f;
 	}
 
 	static float GetBackgroundShapeWidth()

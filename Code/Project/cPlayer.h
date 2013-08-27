@@ -24,6 +24,8 @@ public:
 
 	inline void SetPosition ( sf::Vector2f vec) {m_vecPos = vec; m_Sprite.setPosition(vec);};
 
+	bool DoesCollide ( void );
+
 private:
 	sf::Vector2f m_vecPos;
 	sf::Vector2f m_vecVelocity;
