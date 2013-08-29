@@ -74,31 +74,16 @@ bool cPlayer::DoesCollide ( void )
 void cPlayer::Update (float deltaT)
 {
 	sf::Vector2f t_vecPositionChange = cPlayer::m_vecVelocity * deltaT;
-
+	cPlayer::m_vecVelocity.x = 0.f;
 	cPlayer::Move(t_vecPositionChange);
 
 	cPlayer::m_vecVelocity.y += cPlayerProperties::GetFallingVelocity();
 	cPlayer::m_vecVelocity *= cPlayerProperties::GetFrictionCoefficient();
 
-
-	if(cPlayer::m_vecPos.x < 300)
-	{
 		if(cPlayer::m_vecPos.x <= -20.f)
 		{
 			cPlayer::m_pWorld->EndGame();
 		}
-		else
-		{
-			float factor = 1.f + ((300.f - cPlayer::m_vecPos.x) / 100);
-			cPlayer::m_vecVelocity.x += factor;
-		}
-	}
-	else
-	{
-		cPlayer::m_vecVelocity.x = 0;
-	}
-	
-
 
 	// Collision detection
 	if(cPlayer::m_pWorld != NULL)
@@ -113,18 +98,19 @@ void cPlayer::Update (float deltaT)
 			// is there collission?
 			if(Collision::BoundingBoxTest((*it)->GetSprite(), cPlayer::m_Sprite))
 			{
-				// get the Overlap
-				sf::Vector2f delta = (*it)->GetPosition() - cPlayer::m_vecPos;
+				//// get the Overlap
+				//sf::Vector2f delta = (*it)->GetPosition() - cPlayer::m_vecPos;
 
-				if( delta.y < 0.001f)
-				{
-					t_vecPositionChange.x = cTile::s_iTileSizeInPixels + delta.x;
-				}
+				//if( delta.y < 0.001f)
+				//{
+				//	t_vecPositionChange.x = cTile::s_iTileSizeInPixels + delta.x;
+				//}
 
-				cPlayer::Move(-t_vecPositionChange/2.0f);
-				cPlayer::m_vecVelocity.y *= 0.1f;
+				cPlayer::Move(-t_vecPositionChange);
+				cPlayer::m_vecVelocity.y *= 0.01f;
 			}
 		}
+		
 
 		// Power Up 
 		if( Collision::BoundingBoxTest(cPlayer::m_pWorld->GetPowerUp(), cPlayer::m_Sprite))
